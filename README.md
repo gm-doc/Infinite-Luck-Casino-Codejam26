@@ -1,189 +1,85 @@
-# Kitboga Code Jam 2026
+# Infinite Luck Casino - Kitboga Code Jam 2026 Entry
 "Unskippable ad"
 
-This GitHub repository contains a template you should fork, modify to include your submission, and then submit to us. Please read all the information in this readme before getting started!
-**The deadline for submissions is Thursday, April 30th at 11:59 PM Eastern Time.**
+This GitHub repository contains a contest entry version of the Infinite Luck Casino mini game ads. The minigame is designed to waste as much of your time as possible while forcing you to play the casino themed games. Every minigame is a different style casino lottery with multiple rewards and 3 reward tiers (standard, gold, diamond). The rewards and tiers are the same between the games. The UI contains multiple rigged mechanics that will make it impossible to not engage or skip the game despite what the  rewards might promise.
 
-## Rules
-1. Read through the [Rules & Guidelines](https://kitboga.com/codejam26/rules)
-2. Follow the guidelines in `submission/submission.html` as to where and how your code should be written.
-3. No obfuscation. If we can't read or understand the code, we're probably not going to run it.
-4. No requests for resources outside of your repository, except for well-known javascript libraries from a CDN (jsdelivr, unpkg, googleapis, etc). Aside from these, include all the assets you need in your repository, such as fonts, icons and everything else. If you have a specific idea which requires access to the Internet, perhaps to fetch live stock market data for example, then try to fake it. If it's important to you to make external requests, talk to us about it in Discord.
-5. WebAssembly and Web Workers are not allowed.
-6. Do not include minified code; this includes code generated from build tools like Vite (see also [disabling minification](https://vite.dev/config/build-options#build-minify)) or WebPack. Prefer not using any build tools, if possible.
-7. Desktop browser functionality is required; mobile-friendly is preferred, but not required. Your submission will be displayed in an iframe that scales up and down while maintaining its aspect ratio — sides will not get cut off. You can rely on the iframe boundaries (e.g. `position: absolute; right: 0;` will always be the rightmost border of the video). Test for smooth functionality on desktop browser (especially Chrome/Edge) setups, and optionally also test for mobile-friendliness. (See also [device mode on Chrome](https://developer.chrome.com/docs/devtools/device-mode/), or [responsive design mode on Firefox](https://firefox-source-docs.mozilla.org/devtools-user/responsive_design_mode/).)
-
-
-## Discord
-Please feel free to join the Kitboga discord, and hang out in the [#code-jam](https://discord.com/channels/331609590229893120/1377638134917103647) channel. That's a great place to ask for help, and it will be useful if we need to contact you about your submission for whatever reason.
-https://discord.com/kitboga
-
-## Getting Started
-1. Create a GitHub repository from the template: https://github.com/new?template_name=codejam26&template_owner=The-Kitboga-Show
-2. Clone the new repository locally to your machine
-3. Open the "game shell" in your browser; this can be done in 2 ways:
-   - By opening `index.html` directly in your browser
-   - By running a local webserver (this can help with testing on different devices too). One easy way to do this, if you have python installed, is to run this command in the terminal: `python3 -m http.server 8000`. Then open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser (the port may vary if you used a different method to start a web server).
-4. Create your game in `submission/submission.html`! All parts of your submission should be in the `submission/` folder.
-5. Commit and push your changes
-6. See the "How to Submit" section below
-
-## Forbidden APIs and functions
-Please don't use any of the following:
-- navigator.geolocation
-- navigator.getUserMedia()
-- navigator.connection
-- navigator.clipboard
-- navigator.bluetooth
-- navigator.usb
-- navigator.serial
-- navigator.requestMIDIAccess
-- window.showOpenFilePicker()
-- window.showSaveFilePicker()
-- navigator.serviceWorker
-- window.open()
-- window.print()
-- navigator.permissions
-- navigator.credentials
-- RTCPeerConnection
-- fetch, XMLHttpRequest, WebSocket, etc.
-
-## Examples
-The `examples/` folder contains several example submissions for inspiration:
-- **Buffering** (`examples/buffering/`) — Simulates frequent video buffering that pauses and resumes playback
-- **Fake X** (`examples/fake-x/`) — A fake close button that restarts the ad; the real skip link is somewhere else
-- **Slowdown** (`examples/slowdown/`) — A "Skip in 3...2...1" countdown where each second takes exponentially longer
-- **Survey** (`examples/survey/`) — A post-ad star rating survey that randomly rejects your answer
-
-Use the dropdown in the dev shell to load and test each example.
+## Core Skip Mechanics
+The ad was designed to resemble the annoying mobile game ads that let you play a simple mini game before skipping. This idea is enhance by making it very hard to skip but also engaging and getting your hopes up on purpose. It implements the following skip related mechanics:
+- Long initial skip ad time (360s default)
+- Rewards that reduce the timer are only bait (you will win -30s and -60s during a few initial spins but after that its impossible to get any more time reduction prizes)
+- Ticket Drain Mode - Once the skip ad timer runs out the ticket drain mode will force you to use all remaining tickets (it will be possible but only in this mode - this is endgame) 
+- Collect Prizes! - States that you can only claim your prizes when you run out of tickets (but you never will the drain mode unlocks the skip ad but it will give you 3 more tickets)  
+- Idle check - The game checks if you're idling and will penalize you with more time added to skip timer
+- Minigames - Some prizes (dog, awp, btc) have a special minigame you have to play before collecting them. Those minigames pause the skip ad timer for the duration
+- Safety net - The game has a built in safety net so it can't take forever. If the gameplay time exceeds 10 minutes the skip ad button will become available unconditionally
 
 
-## Prizes and Judging
-Entries will go through a series of progressive rounds of review/judging. They will first be shortlisted by a panel of Kitboga team members based on cleverness, technical skill, hookability, style and humor. See the [main webpage](https://kitboga.com/codejam26) for more clarity on these criteria.
+## Ad Elements Breakdown
+This ad interface is quite complex and consists of multiple minigames, overlays and pop-ups. The main elements are 3 minigame UIs (prize wheel, slot machine, scratch cards), widgets displayed around each minigame and special prizes that have separate minigames related to them implemented within the special pop-up window.
 
-The best submissions will go on to be showcased and reviewed on-stream by Kitboga & Twitch Chat via polling, and the best of those submissions will be tested with scammers.
+Below is the in-depth breakdown of UI elements implemented by this ad with examples:
 
-Prizes will include merch; Amazon Prime, Twitch & Kraken+ subscriptions; Discord emoticons and roles; and more!
+### Video Ad
+A short (~15s) video advertisment of the Infinite Luck Casino is played before showing a random minigame. It's deliberately cheap using AI voiceover and a lot of unneccessary effects.
 
-## How to submit
-**Remember, the deadline is Thursday, April 30th at 11:59 PM Eastern Time!**
-Don't forget to [read the license](https://kitboga.com/codejam26/terms), which you'll need to agree to in order to take part.
+### Prize Wheel
+<img width="292" height="278" alt="image" src="https://github.com/user-attachments/assets/dd17dcb0-1f1f-4dc9-ab1b-bb684ac963d4" />
+Spin the wheel to win a prize - it's slower then the other minigames but guarantees a reward with each spin.
 
-Go here: https://kitboga.com/codejam26
+### Slot Machine
+<img width="292" height="293" alt="image" src="https://github.com/user-attachments/assets/c2a2dc78-a177-4e47-8caa-8b17ed07904c" />
+Spin the slots using tickets to win the prizes - faster then the wheel but does not always land on the reward.
 
-## (Optional) Live Demo
-Add a publicly viewable demo for your submission by enabling GitHub Pages in your repository settings. Navigate to `Settings` > `Pages`, then under `Branch`, select `main`, and then press `Save`. Once the site is built the URL will appear.
+### Scratch Cards
+<img width="293" height="314" alt="image" src="https://github.com/user-attachments/assets/b6525a24-876b-4de8-8601-c89023582c44" />
+Scratch the card with your mouse (click + drag) or your finger (on touch screen). If the rewards underneath allign you win the prize!
 
-## FAQ
+### Prize List
+<img width="122" height="144" alt="image" src="https://github.com/user-attachments/assets/d0adae79-40fb-46d0-aa74-4e1791e828ae" />
+A simple widget that displays all the collected prizes - Collecting them will show a pop-up that explain you should keep playing at least until your tickets run out before redeeming your prizes. You are way to lucky for your tickets to run out :) 
 
-**We can use requestAnimationFrame, correct?**
-Yes. Anything but the listed functions under "Forbidden APIs and functions" is allowed.
+### Ticket Counter
+<img width="119" height="137" alt="image" src="https://github.com/user-attachments/assets/4e276a28-6e4e-41ac-8858-c287975403fd" />
+A simple overlay showing your remaining tickets. Don't worry - If you are running low the game will make sure you get some more.
 
-**Are the ads in the same structure in the live demo? As in, located in ../ads and named something like ad_12.mp4**
-That's just an example which you can use to test your code. You won't know the name or location of the actual videos, but you can get limited info using a `getVideoInfo` request.
+### Live Winners
+<img width="119" height="86" alt="image" src="https://github.com/user-attachments/assets/7fa6abfb-49c9-4258-8c7e-fb90c65a9468" />
+An overlay that aims to irritate you with the fake live winners and their comments. Some of them are randomized to seem more belivable, others are forced to use some inside jokes (~1 in 5)
 
-**Is the iframe always bound to the confines of the video? Can I rely on `position: absolute; right: 0;` always being the rightmost border of the video?**
-Yes to both. We will force it to be one size, even if it is a bit on the small side for the container, so you have a consistent size to work from.
+### Idling Protection
+<img width="266" height="258" alt="image" src="https://github.com/user-attachments/assets/97986b1c-9096-461f-a9cc-dc56f4553b1e" />
+If you haven't been playing the game for more then 35 seconds (spinning the machine/wheel or scratching the cards) the game will get increasingly engry with you and will punish you with additional time added to your skip button. This pop-up has multiple tiers and the most severe punishment is +300s.
 
-**Will the actual video during the live demo be responsive? As in — will it change sizes, or just get the sides cut off, e.g. on mobile?**
-It will scale up and down, maintaining the aspect ratio — sides will not get cut off.
+### Dog
+<img width="246" height="285" alt="Dog" src="https://github.com/user-attachments/assets/d6045749-debc-40f1-8611-316d4ccd2151" />
+A dog is a special friend that you can win in the lottery. It will play a simple kiss the dog minigame inspired by one of the captchas from Kits video. It has a separate timer (120s) that can be reduced by kissing the dog on the lips (-30s each time) If you fail to do that at least once, you won't be able to collect him!
 
-**How do I edit/delete a submission?**
-If you haven't finalized it, you can edit the repo or delete the entry at any time.
+### AWP Dragon Lore Skin
+<img width="466" height="331" alt="image" src="https://github.com/user-attachments/assets/b0622d7a-a638-4dfb-b508-f7cef639f9c6" />
+To get the skin you will have to first prove your skills in a sniper minigame. Aim and shoot 5 targets within the time limit to get the reward.
 
-Once you've finalized your submission, we pull a copy of your repo, and you can no longer update or delete it on your end.
+### Bitcoin
+<img width="383" height="355" alt="image" src="https://github.com/user-attachments/assets/c2bb898c-ee87-4b49-bfe2-baf9c7672d5c" />
+To get the Bitcoin you'll have to help the Kraken get thorugh the maze first - hold and drag him with your finger/mouse to reach the finish line
 
-If you realize there's a bug or want to make edits or updates, you can always work on a new release and submit as a new entry. *Title it the same name as the previous, and put something like [New v3.27 - delete old] after the title - so we know which one is the new one, and makes it easier for us to delete old one*. Then DM Michael or put a message in #code-jam to let us know you submitted a replacement and to delete the old one.
 
-Since we need to manually find and delete these, please do this as a last resort.  You don't need to finalize your submission until you've done all the testing you want and you feel like it's ready to ship :) 
+## Easter Eggs
+The game has to hidden time control buttons that are in no way indicated by the UI:
+<img width="72" height="17" alt="image" src="https://github.com/user-attachments/assets/db9a6721-b7cc-4d07-9d22-5c0a0d716de8" />
+-clicking green dot next to live chat reduses the skip ad timer by 100s
+<img width="90" height="26" alt="image" src="https://github.com/user-attachments/assets/2f096839-1d9a-4f3f-aeb1-21a53edeac53" />
+-clicking the speaker on the volume control adds 100s to your timer
+Both those time adjustments are done with minimal UI (do not display the standard time added/reduce indicators)
 
-## Further help
-Drop into the Kitboga discord server, and check out the [#code-jam](https://discord.com/channels/331609590229893120/1377638134917103647) channel. Please don't ask questions via email, as we might not see them before the deadline.
+## Additional Arguments
+The submission.html accepts additional arguments that allow you to force the game ui or add a debug menu overlay which allows you to play the reward specific minigames and displays the safety net countdown
 
-## API
+| Parameter | Effect |
+|-----------|--------|
+| `?game=wheel` | Force wheel-of-fortune game mode |
+| `?game=slot` | Force slot machine game mode |
+| `?game=scratch` | Force scratch card game mode |
+| `?game=random` | Pick a random mode (default when omitted) |
+| `?debug` | Show debug buttons (🐕 dog, 🔫 sniper, ₿ maze) and safety-net countdown |
 
-All communication between your submission and the game shell uses `window.top.postMessage()`. Messages use the format `{ type: string, value?: any }`.
 
-### Sending events (submission -> shell)
-
-| Message                                      | Description                                                                     |
-|----------------------------------------------|---------------------------------------------------------------------------------|
-| `{ type: 'success' }`                        | The ad was successfully dismissed. Shows a success banner and reloads the page. |
-| `{ type: 'fail' }`                           | The user failed the ad. Shows a fail banner and reloads the page.               |
-| `{ type: 'play' }`                           | Resume video playback.                                                          |
-| `{ type: 'pause' }`                          | Pause video playback.                                                           |
-| `{ type: 'seekTo', value: number }`          | Seek the video to a specific time (in seconds).                                 |
-| `{ type: 'setPlaybackRate', value: number }` | Set the video playback rate (e.g. `0.5` for half speed, `2` for double).        |
-| `{ type: 'setVolume', value: number }`       | Set the video volume (`0` to `1`).                                              |
-| `{ type: 'getVideoInfo' }`                   | Request current video state. The shell responds with a `videoInfo` event.       |
-| `{ type: 'setVideoFilter', value: string }`  | Apply a CSS filter to the video (e.g. `'blur(2px)'`, `'hue-rotate(90deg)'`).    |
-
-Example:
-```js
-// Dismiss the ad
-window.top.postMessage({ type: 'success' }, '*');
-
-// Slow down the video
-window.top.postMessage({ type: 'setPlaybackRate', value: 0.25 }, '*');
-
-// Apply visual effects to the video
-window.top.postMessage({ type: 'setVideoFilter', value: 'blur(2px)' }, '*');
-window.top.postMessage({ type: 'setVideoFilter', value: 'hue-rotate(90deg) saturate(1.5)' }, '*');
-
-// Clear video filter
-window.top.postMessage({ type: 'setVideoFilter', value: 'none' }, '*');
-
-// Request current video timing info
-window.top.postMessage({ type: 'getVideoInfo' }, '*');
-```
-
-### Receiving events (shell -> submission)
-
-Listen for events from the shell using `window.addEventListener('message', ...)`.
-
-| Message                  | Description                                                                      |
-|--------------------------|----------------------------------------------------------------------------------|
-| `{ type: 'adStarted' }`  | The ad has started. Sent when the video begins playing and the iframe is loaded. |
-| `{ type: 'adFinished' }` | The video has finished playing (reached the end).                                |
-| `{ type: 'timeupdate', currentTime, duration, paused, playbackRate }` | Sent periodically during playback with current video timing info. |
-| `{ type: 'videoInfo', currentTime, duration, paused, playbackRate, volume, muted }` | Response to a `getVideoInfo` request. |
-
-Example:
-```js
-window.addEventListener('message', (event) => {
-  if (!event.data || !event.data.type) return;
-
-  switch (event.data.type) {
-    case 'adStarted':
-      // The ad has started, show your overlay
-      break;
-    case 'adFinished':
-      // The video ended, e.g. show a survey or call fail
-      break;
-    case 'timeupdate':
-      // Called frequently during playback
-      const { currentTime, duration } = event.data;
-      const timeRemaining = duration - currentTime;
-
-      // Example: Do something 10 seconds before the video ends
-      if (timeRemaining <= 10 && timeRemaining > 9) {
-        console.log('10 seconds left!');
-      }
-      break;
-    case 'videoInfo':
-      // Response to getVideoInfo request
-      console.log('Video info:', event.data);
-      break;
-  }
-});
-
-// Request video info on demand
-window.top.postMessage({ type: 'getVideoInfo' }, '*');
-
-// Apply a CSS filter to the video
-window.top.postMessage({ type: 'setVideoFilter', value: 'hue-rotate(20deg)' }, '*');
-```
-
-### Default behavior
-
-The submission template listens for `adFinished` and calls `fail` by default — if the user doesn't skip the ad before the video ends, it is marked as a fail. You can replace this with any other interaction (see `examples/survey`), but your submission must eventually call success or fail.
