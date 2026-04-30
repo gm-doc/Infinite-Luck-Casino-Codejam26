@@ -1,84 +1,3877 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Joel</title>
+  <title>Infinite Luck Casino</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @font-face {
+      font-family: 'Bungee';
+      src: url('assets/fonts/Bungee-Regular.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Bungee Inline';
+      src: url('assets/fonts/BungeeInline-Regular.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
 
-  <style type="text/css">
-    html,
-    body {
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 960px; height: 540px;
+      overflow: hidden;
       background: transparent;
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
+      font-family: 'Bungee', sans-serif;
     }
 
     #overlay-container {
-      width: 960px;
-      height: 540px;
+      position: relative;
+      width: 960px; height: 540px;
+      background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0618 60%, #000 100%);
     }
 
-    /* Your style here... (feel free to remove this example styling) */
-    #skip {
-      display: none; /* Hidden until ad starts */
+    /* Animated background stars */
+    .bg-star {
       position: absolute;
-      bottom: 60px;
-      right: 0;
-      padding: 10px 18px;
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid black;
-      border-right-width: 0;
-      font-size: 1.2rem;
-      border-radius: 4px 0 0 4px;
-      color: white;
-      cursor: pointer;
+      border-radius: 50%;
+      background: white;
+      animation: twinkle 2s infinite alternate;
+      pointer-events: none;
     }
+    @keyframes twinkle { from { opacity: 0.2; } to { opacity: 1; } }
+
+    /* Border light strips */
+    #light-strip-top, #light-strip-bottom {
+      position: absolute; left: 0; right: 0; height: 12px;
+      display: flex; justify-content: space-around; align-items: center;
+      z-index: 10;
+    }
+    #light-strip-top { top: 100px; z-index: 25; }
+    #light-strip-bottom { bottom: 0; }
+    .bulb {
+      width: 10px; height: 10px; border-radius: 50%;
+      animation: bulb-blink 0.7s infinite alternate;
+    }
+    @keyframes bulb-blink { from { opacity: 0.3; } to { opacity: 1; box-shadow: 0 0 6px 3px currentColor; } }
+
+    /* Casino banner */
+    #banner {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 100px;
+      z-index: 20;
+      background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0618 70%, #000 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .banner-rule {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #ffd700, transparent);
+    }
+    .banner-rule.top    { top: 8px; }
+    .banner-rule.bottom { bottom: 8px; }
+    #banner-title {
+      font-family: 'Bungee Inline', sans-serif;
+      font-size: 30px; color: #ffd700;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px #ff9900, 0 0 22px #ff4400, 2px 2px 0 #5a0000;
+      line-height: 1; position: relative; z-index: 2;
+      animation: banner-pulse 2s ease-in-out infinite alternate;
+      white-space: nowrap;
+    }
+    @keyframes banner-pulse {
+      from { text-shadow: 0 0 10px #ff9900, 0 0 22px #ff4400, 2px 2px 0 #5a0000; }
+      to   { text-shadow: 0 0 16px #ffcc00, 0 0 36px #ff6600, 2px 2px 0 #5a0000; }
+    }
+    #banner-sub {
+      font-family: 'Bungee', sans-serif;
+      font-size: 9px; color: #ff9900;
+      letter-spacing: 4px; text-transform: uppercase;
+      margin-top: 4px; opacity: 0.85;
+      position: relative; z-index: 2; white-space: nowrap;
+    }
+
+    /* Title */
+    #casino-title {
+      position: absolute;
+      top: 112px; left: 50%; transform: translateX(-50%);
+      font-family: 'Bungee Inline', sans-serif;
+      font-size: 26px;
+      color: #ffd700;
+      text-shadow: 0 0 10px #ff9900, 0 0 24px #ff4400, 2px 2px 0 #8b0000;
+      white-space: nowrap;
+      z-index: 10;
+      animation: title-pulse 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes title-pulse {
+      from { text-shadow: 0 0 10px #ff9900, 0 0 24px #ff4400, 2px 2px 0 #8b0000; }
+      to   { text-shadow: 0 0 20px #ffcc00, 0 0 40px #ff6600, 2px 2px 0 #8b0000; }
+    }
+
+    /* Left panel: prizes won */
+    #prizes-panel {
+      position: absolute;
+      top: 150px; left: 8px;
+      width: 158px;
+      background: rgba(0,0,0,0.75);
+      border: 2px solid #ffd700;
+      border-radius: 8px;
+      padding: 8px;
+      z-index: 10;
+      box-shadow: 0 0 12px #ffd700aa;
+      max-height: 340px; overflow-y: auto; overflow-x: hidden;
+    }
+    #prizes-panel {
+      scrollbar-width: thin;
+      scrollbar-color: #ffd700 #12061f;
+    }
+    #prizes-panel::-webkit-scrollbar {
+      width: 10px;
+    }
+    #prizes-panel::-webkit-scrollbar-track {
+      background: linear-gradient(180deg, #12061f, #06030d);
+      border-left: 1px solid rgba(255, 215, 0, 0.18);
+      border-radius: 10px;
+    }
+    #prizes-panel::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #ffd700, #ff9f1c);
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.45);
+    }
+    #prizes-panel::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #ffe066, #ffb347);
+    }
+    #prizes-panel h3 {
+      font-size: 11px; color: #ffd700;
+      text-align: center; margin-bottom: 6px;
+      letter-spacing: 1px;
+      text-shadow: 0 0 6px #ffd700;
+    }
+    #prizes-list { list-style: none; }
+    #prizes-list li {
+      font-size: 11px; color: #fff;
+      padding: 3px 4px;
+      border-bottom: 1px solid rgba(255,215,0,0.15);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    #prizes-list li:last-child { border-bottom: none; }
+    .prize-count {
+      color: #ffd700; font-size: 11px;
+      background: rgba(255,215,0,0.15);
+      border-radius: 4px; padding: 1px 5px;
+    }
+    #prizes-empty {
+      font-size: 10px; color: #888; text-align: center; padding: 4px 0;
+      font-family: sans-serif;
+    }
+    #collect-prizes-btn {
+      margin-top: 8px;
+      width: 100%;
+      padding: 7px 4px;
+      background: linear-gradient(135deg, #ffd700, #ff9900);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Bungee', sans-serif;
+      font-size: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 8px #ffd70088;
+      transition: transform 0.1s, box-shadow 0.1s;
+      letter-spacing: 0.5px;
+    }
+    #collect-prizes-btn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 14px #ffd700bb;
+    }
+
+    /* Right panel: ticket counter */
+    #ticket-panel {
+      position: absolute;
+      top: 150px; right: 8px;
+      width: 158px;
+      background: rgba(0,0,0,0.75);
+      border: 2px solid #ffd700;
+      border-radius: 8px;
+      padding: 12px 8px;
+      z-index: 10;
+      box-shadow: 0 0 12px #ffd700aa;
+      text-align: center;
+    }
+    #ticket-panel h3 {
+      font-size: 11px; color: #ffd700;
+      letter-spacing: 1px; margin-bottom: 8px;
+      text-shadow: 0 0 6px #ffd700;
+    }
+    #ticket-count {
+      font-size: 48px; color: #ffd700;
+      text-shadow: 0 0 12px #ffd700, 0 0 24px #ff9900;
+      line-height: 1;
+      transition: transform 0.15s;
+    }
+    #ticket-count.bump { transform: scale(1.4); }
+    #ticket-icon { font-size: 28px; margin-top: 4px; }
+    #ticket-label {
+      font-size: 10px; color: #aaa;
+      margin-top: 4px; font-family: sans-serif;
+    }
+
+    /* Fake winners ticker */
+    #winners-ticker {
+      position: absolute; top: 328px; right: 8px; width: 158px;
+      background: rgba(0,0,0,0.75); border: 2px solid #ffd700; border-radius: 8px;
+      padding: 8px 8px 7px; z-index: 10; box-shadow: 0 0 12px #ffd700aa; overflow: hidden;
+    }
+    #winners-ticker h3 { font-size: 9px; color: #ffd700; letter-spacing: 1px; margin-bottom: 6px;
+      text-shadow: 0 0 6px #ffd700; text-align: center; text-transform: uppercase; }
+    #winner-msg-wrap { height: 72px; position: relative; overflow: hidden; }
+    .winner-msg {
+      position: absolute; left: 0; right: 0; top: 0;
+      font-size: 9.5px; line-height: 1.45; color: #ddd; font-family: sans-serif;
+      transition: opacity 0.5s, transform 0.5s; opacity: 0; transform: translateY(8px);
+    }
+    .winner-msg.visible { opacity: 1; transform: translateY(0); }
+    .winner-msg .wm-name  { color: #ffd700; font-weight: bold; }
+    .winner-msg .wm-prize { color: #00ffcc; font-weight: bold; }
+    .winner-msg .wm-game  { color: #ff88ff; font-weight: bold; }
+    .winner-msg .wm-quote { color: #aaa; font-style: italic; display: block; margin-top: 3px; }
+    #winner-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: #00ff88; box-shadow: 0 0 5px #00ff88; margin-right: 4px;
+      animation: dot-pulse 1s ease-in-out infinite alternate; vertical-align: middle;
+    }
+    #winner-live-label { font-size: 8.5px; color: #00ff88; font-family: sans-serif; vertical-align: middle; }
+    @keyframes dot-pulse { from { opacity: 0.4; } to { opacity: 1; box-shadow: 0 0 8px #00ff88; } }
+
+    /* Skip button */
+    #skip {
+      display: none;
+      position: absolute;
+      bottom: 16px; right: 8px;
+      width: 158px;
+      padding: 14px 8px;
+      background: rgba(0,0,0,0.7);
+      border: 2px solid #555;
+      font-size: 13px;
+      border-radius: 8px;
+      color: #aaa;
+      cursor: pointer;
+      font-family: 'Bungee', sans-serif;
+      z-index: 30;
+      text-align: center;
+      transition: background 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    #skip.ready { border-color: #ffd700; color: #ffd700; box-shadow: 0 0 12px #ffd70099; }
+    #skip.ready:hover { background: rgba(255,215,0,0.15); }
+    #skip-timer { display: block; font-size: 10px; color: #888; margin-top: 4px; font-family: sans-serif; }
+
+    /* Shared popup keyframes */
+    @keyframes pop-in {
+      from { transform: scale(0.4); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    @keyframes skip-flash {
+      0%   { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-18px); }
+    }
+
+    /* Win popup */
+    #win-popup {
+      display: none;
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.82);
+      z-index: 50;
+      align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    #win-popup.show { display: flex; }
+    #win-box {
+      background: linear-gradient(145deg, #1a0033, #0d001a);
+      border: 3px solid #ffd700;
+      border-radius: 16px;
+      padding: 28px 40px;
+      text-align: center;
+      box-shadow: 0 0 40px #ffd700, 0 0 80px #ff4400aa;
+      animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-width: 340px;
+    }
+    #win-title {
+      font-family: 'Bungee Inline', sans-serif;
+      font-size: 36px; color: #ffd700;
+      text-shadow: 0 0 16px #ffd700, 0 0 32px #ff9900;
+      animation: title-pulse 0.8s ease-in-out infinite alternate;
+    }
+    #win-prize-icon { font-size: 60px; margin: 10px 0 4px; }
+    #win-prize-icon .btc-icon {
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffd700, 0 0 20px #ff9900;
+    }
+    #win-prize-name { font-size: 20px; color: #fff; text-shadow: 0 0 8px #00ffff; margin-bottom: 6px; }
+    #win-flavor { font-size: 12px; color: #ffcc88; font-family: sans-serif; margin-bottom: 16px; min-height: 18px; }
+    #collect-btn {
+      background: linear-gradient(135deg, #ffd700, #ff9900);
+      color: #000; border: none;
+      padding: 12px 36px;
+      font-family: 'Bungee', sans-serif;
+      font-size: 16px; border-radius: 8px;
+      cursor: pointer; box-shadow: 0 4px 16px #ffd70088;
+      transition: transform 0.1s;
+    }
+    #collect-btn:hover { transform: scale(1.06); }
+
+    /* Dog Kiss Popup */
+    #dog-popup { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.88); z-index: 55; align-items: center; justify-content: center; }
+    #dog-popup.show { display: flex; }
+    #dog-box { background: linear-gradient(145deg, #1a0033, #0d001a); border: 3px solid #ffd700; border-radius: 16px; padding: 24px 36px; text-align: center; box-shadow: 0 0 40px #ffd700, 0 0 80px #ff880088; animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); max-width: 340px; width: 300px; }
+    #dog-title { font-family: 'Bungee Inline', sans-serif; font-size: 26px; color: #ffd700; text-shadow: 0 0 16px #ffd700; margin-bottom: 8px; }
+    #dog-instructions { font-size: 12px; color: #ffcc88; font-family: sans-serif; margin-bottom: 14px; line-height: 1.4; }
+    #dog-img-wrap { display: inline-block; width: 120px; height: 120px; cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiI+PHRleHQgeT0iMjgiIGZvbnQtc2l6ZT0iMjgiPvCfkos8L3RleHQ+PC9zdmc+') 16 16, pointer; margin-bottom: 10px; user-select: none; }
+    #dog-img { width: 120px; height: 120px; object-fit: contain; display: block; pointer-events: none; }
+    #dog-feedback { font-size: 11px; color: #ff6688; font-family: sans-serif; min-height: 16px; margin-bottom: 10px; }
+    #dog-collect-btn { background: #444; color: #888; border: 2px solid #666; padding: 12px 28px; font-family: 'Bungee', sans-serif; font-size: 14px; border-radius: 8px; cursor: not-allowed; opacity: 0.6; }
+    #dog-collect-btn.ready { background: linear-gradient(135deg, #ffd700, #ff9900); color: #000; border-color: #ffd700; cursor: pointer; opacity: 1; box-shadow: 0 4px 16px #ffd70088; transition: transform 0.1s; }
+    #dog-collect-btn.ready:hover { transform: scale(1.06); }
+
+    /* Sniper Minigame */
+    #sniper-popup { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.88); z-index: 56; align-items: center; justify-content: center; }
+    #sniper-popup.show { display: flex; }
+    #sniper-box { position: relative; width: 600px; height: 420px; background: #000; border-radius: 12px; overflow: hidden; border: 2px solid #ff8800; box-shadow: 0 0 40px #ff880088, 0 0 80px #ff440044; animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0; }
+    #sniper-building { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 0; }
+    #sniper-target { position: absolute; display: none; transform: translate(-50%,-50%); pointer-events: none; z-index: 1; }
+    #sniper-canvas { position: absolute; inset: 0; cursor: none; z-index: 2; }
+    #sniper-hud { position: absolute; top: 8px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 14px; pointer-events: none; z-index: 3; font-family: 'Bungee', sans-serif; font-size: 13px; color: #00ff44; text-shadow: 0 0 8px #00ff44; }
+    #sniper-intro { display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; z-index: 5; background: rgba(0,0,0,0.88); }
+    #sniper-intro.show { display: flex; }
+    #sniper-intro-box { background: linear-gradient(145deg, #1a0a00, #0d0500); border: 3px solid #ff8800; border-radius: 16px; padding: 20px 28px; text-align: center; max-width: 320px; box-shadow: 0 0 40px #ff8800aa, 0 0 80px #ff440066; animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    #sniper-intro-title { font-family: 'Bungee Inline', sans-serif; font-size: 22px; color: #ff8800; text-shadow: 0 0 16px #ff8800; margin-bottom: 10px; }
+    #sniper-intro-body { font-family: sans-serif; font-size: 12px; color: #ffcc88; line-height: 1.5; margin-bottom: 16px; }
+    #sniper-intro-btn { background: linear-gradient(135deg, #ff8800, #ff4400); color: #fff; border: none; padding: 10px 28px; font-family: 'Bungee', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 16px #ff880088; transition: transform 0.1s; }
+    #sniper-intro-btn:hover { transform: scale(1.06); }
+    #dbg-dog { display: none; position: absolute; top: 10px; right: 8px; z-index: 202; background: rgba(80,40,0,0.6); border: 1px solid #ffbb44; color: #ffd288; font-size: 10px; padding: 3px 7px; cursor: pointer; font-family: monospace; border-radius: 3px; }
+    #dbg-sniper { display: none; position: absolute; top: 34px; right: 8px; z-index: 202; background: rgba(80,0,0,0.6); border: 1px solid #ff4444; color: #ff8888; font-size: 10px; padding: 3px 7px; cursor: pointer; font-family: monospace; border-radius: 3px; }
+
+    /* Maze Minigame */
+    #maze-popup { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.88); z-index: 57; align-items: center; justify-content: center; }
+    #maze-popup.show { display: flex; }
+    #maze-box { position: relative; width: 500px; height: 460px; background: #d0b8e8; border-radius: 12px; overflow: hidden; border: 2px solid #ffd700; box-shadow: 0 0 40px #ffd70088, 0 0 80px #ff990044; animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0; }
+    #maze-canvas { position: absolute; inset: 0; z-index: 0; }
+    #maze-banner {
+      position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+      width: 88%; z-index: 2; pointer-events: none;
+      text-align: center; border-radius: 10px;
+      background: linear-gradient(135deg, rgba(48,24,0,0.95), rgba(122,70,0,0.92), rgba(48,24,0,0.95));
+      border: 2px solid #ffb300;
+      box-shadow: 0 0 18px rgba(255,183,0,0.5), inset 0 0 16px rgba(255,213,79,0.25);
+      padding: 6px 10px 7px;
+    }
+    #maze-banner-title {
+      font-family: 'Bungee Inline', sans-serif;
+      font-size: 16px; letter-spacing: 1px;
+      color: #ffd54f;
+      text-shadow: 0 0 10px #ffb300, 0 0 2px #000;
+      line-height: 1.1;
+    }
+    #maze-banner-sub {
+      margin-top: 2px;
+      font-family: sans-serif;
+      font-size: 9px; letter-spacing: 1.2px;
+      color: #ffe9a6;
+      text-transform: uppercase;
+      text-shadow: 0 0 6px rgba(255,179,0,0.8);
+      opacity: 0.92;
+    }
+    #maze-hud {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88%;
+      bottom: 8px;
+      display: block;
+      pointer-events: none;
+      z-index: 2;
+      font-family: 'Bungee', sans-serif;
+      font-size: 16px;
+      line-height: 1.1;
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffb300, 0 0 2px #000;
+      background: linear-gradient(135deg, rgba(48,24,0,0.95), rgba(122,70,0,0.92), rgba(48,24,0,0.95));
+      border: 2px solid #ffb300;
+      border-radius: 10px;
+      padding: 6px 10px 7px;
+      box-shadow: 0 0 18px rgba(255,183,0,0.5), inset 0 0 16px rgba(255,213,79,0.25);
+      box-sizing: border-box;
+    }
+    #maze-timer-hud { display: block; width: 100%; text-align: center; }
+    #maze-intro { display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; z-index: 3; background: rgba(0,0,0,0.88); }
+    #maze-intro.show { display: flex; }
+    #maze-intro-box { background: linear-gradient(145deg, #1a1000, #0d0800); border: 3px solid #ffd700; border-radius: 16px; padding: 20px 28px; text-align: center; max-width: 320px; box-shadow: 0 0 40px #ffd700aa, 0 0 80px #ff990066; animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    #maze-intro-title { font-family: 'Bungee Inline', sans-serif; font-size: 22px; color: #ffd700; text-shadow: 0 0 16px #ffd700; margin-bottom: 10px; }
+    #maze-intro-body { font-family: sans-serif; font-size: 12px; color: #ffcc88; line-height: 1.5; margin-bottom: 16px; }
+    #maze-intro-btn { background: linear-gradient(135deg, #ffd700, #ff9900); color: #000; border: none; padding: 10px 28px; font-family: 'Bungee', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 16px #ffd70088; transition: transform 0.1s; }
+    #maze-intro-btn:hover { transform: scale(1.06); }
+    #dbg-maze { display: none; position: absolute; top: 58px; right: 8px; z-index: 202; background: rgba(0,50,0,0.6); border: 1px solid #44ff44; color: #88ff88; font-size: 10px; padding: 3px 7px; cursor: pointer; font-family: monospace; border-radius: 3px; }
+    #dbg-safety-net {
+      display: none;
+      position: absolute;
+      top: 82px;
+      right: 8px;
+      z-index: 202;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid #666;
+      color: #ddd;
+      font-size: 10px;
+      padding: 3px 7px;
+      font-family: monospace;
+      border-radius: 3px;
+      letter-spacing: 0.2px;
+    }
+
+    /* Minigame Fail Popup */
+    #minigame-fail-popup { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.88); z-index: 58; align-items: center; justify-content: center; }
+    #minigame-fail-popup.show { display: flex; }
+    #minigame-fail-box { background: linear-gradient(145deg, #1a0000, #0d0000); border: 3px solid #ff4444; border-radius: 16px; padding: 28px 36px; text-align: center; max-width: 340px; box-shadow: 0 0 40px #ff444488, 0 0 80px #aa000066; animation: pop-in 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    #minigame-fail-title { font-family: 'Bungee Inline', sans-serif; font-size: 32px; color: #ff4444; text-shadow: 0 0 16px #ff4444; margin-bottom: 12px; }
+    #minigame-fail-msg { font-family: sans-serif; font-size: 13px; color: #ffaaaa; margin-bottom: 20px; line-height: 1.5; }
+    #minigame-fail-btn { background: linear-gradient(135deg, #cc0000, #880000); color: #fff; border: none; padding: 12px 36px; font-family: 'Bungee', sans-serif; font-size: 16px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 16px #ff444488; transition: transform 0.1s; }
+    #minigame-fail-btn:hover { transform: scale(1.06); }
+
+    /* Skip warn popup */
+    #skip-warn-popup {
+      display: none; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.82); z-index: 60;
+      align-items: center; justify-content: center;
+    }
+    #skip-warn-popup.show { display: flex; }
+    #skip-warn-box {
+      background: linear-gradient(145deg, #1a0033, #0d001a);
+      border: 3px solid #ff4444; border-radius: 16px;
+      padding: 24px 32px; text-align: center; max-width: 320px;
+      box-shadow: 0 0 30px #ff4444aa;
+      animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #skip-warn-box h2 { font-size: 20px; color: #ff4444; text-shadow: 0 0 12px #ff4444; margin-bottom: 10px; }
+    #skip-warn-box p { font-size: 13px; color: #ffcccc; font-family: sans-serif; margin-bottom: 16px; line-height: 1.5; }
+    #skip-warn-ok { background: #ff4444; color: white; border: none; padding: 10px 28px; font-family: 'Bungee', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; }
+    #skip-warn-ok:hover { background: #cc0000; }
+
+    /* Out-of-tickets popup (end of drain phase) */
+    #out-of-tickets-popup {
+      display: none; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.92); z-index: 70;
+      align-items: center; justify-content: center;
+    }
+    #out-of-tickets-popup.show { display: flex; }
+    #out-of-tickets-box {
+      background: linear-gradient(145deg, #1a1a00, #0d0d00);
+      border: 3px solid #ffd700; border-radius: 16px;
+      padding: 28px 36px; text-align: center; max-width: 360px;
+      box-shadow: 0 0 40px #ffd700aa;
+      animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #out-of-tickets-box .oot-emoji { font-size: 40px; margin-bottom: 8px; }
+    #out-of-tickets-box h2 { font-size: 22px; color: #ffd700; text-shadow: 0 0 12px #ffd700; margin-bottom: 10px; }
+    #out-of-tickets-box p { font-size: 13px; color: #ffe599; font-family: sans-serif; margin-bottom: 20px; line-height: 1.5; }
+    .oot-buttons { display: flex; flex-direction: column; gap: 10px; }
+    #oot-more-btn { background: linear-gradient(135deg, #00cc44, #007722); color: white; border: none; padding: 12px 20px; font-family: 'Bungee', sans-serif; font-size: 15px; border-radius: 10px; cursor: pointer; }
+    #oot-more-btn:hover { background: linear-gradient(135deg, #00ff55, #00aa33); }
+    #oot-skip-btn { background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 20px; font-family: 'Bungee', sans-serif; font-size: 12px; border-radius: 8px; cursor: pointer; margin-top: 2px; }
+    #oot-skip-btn:hover { color: #fff; border-color: #aaa; }
+
+    /* Lose prizes confirm popup */
+    #lose-prizes-popup {
+      display: none; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.95); z-index: 75;
+      align-items: center; justify-content: center;
+    }
+    #lose-prizes-popup.show { display: flex; }
+    #lose-prizes-box {
+      background: linear-gradient(145deg, #1a0000, #0d0000);
+      border: 3px solid #ff4444; border-radius: 16px;
+      padding: 28px 36px; text-align: center; max-width: 360px;
+      box-shadow: 0 0 40px #ff444488;
+      animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #lose-prizes-box h2 { font-family: 'Bungee Inline', sans-serif; font-size: 22px; color: #ff4444; text-shadow: 0 0 12px #ff4444; margin-bottom: 10px; }
+    #lose-prizes-box p { font-size: 13px; color: #ffaaaa; font-family: sans-serif; margin-bottom: 20px; line-height: 1.5; }
+    .lp-buttons { display: flex; flex-direction: column; gap: 10px; }
+    #lp-confirm-btn { background: linear-gradient(135deg, #cc0000, #880000); color: #fff; border: none; padding: 12px 20px; font-family: 'Bungee', sans-serif; font-size: 14px; border-radius: 10px; cursor: pointer; }
+    #lp-confirm-btn:hover { background: linear-gradient(135deg, #ff2222, #aa0000); }
+    #lp-cancel-btn { background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 20px; font-family: 'Bungee', sans-serif; font-size: 12px; border-radius: 8px; cursor: pointer; }
+    #lp-cancel-btn:hover { color: #fff; border-color: #aaa; }
+
+    /* Collect prizes warn popup */
+    #collect-warn-popup {
+      display: none; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.82); z-index: 60;
+      align-items: center; justify-content: center;
+    }
+    #collect-warn-popup.show { display: flex; }
+    #collect-warn-box {
+      background: linear-gradient(145deg, #001a33, #001433);
+      border: 3px solid #00ccff; border-radius: 16px;
+      padding: 24px 28px; text-align: center; max-width: 340px;
+      box-shadow: 0 0 30px #00ccffaa;
+      animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #collect-warn-box .cw-emoji { font-size: 40px; margin-bottom: 8px; }
+    #collect-warn-box h2 { font-size: 18px; color: #00eeff; text-shadow: 0 0 12px #00ccff; margin-bottom: 10px; line-height: 1.3; }
+    #collect-warn-box p { font-size: 12px; color: #ccf0ff; font-family: sans-serif; margin-bottom: 16px; line-height: 1.6; }
+    #collect-warn-ok {
+      background: linear-gradient(135deg, #00ccff, #0066ff); color: white; border: none;
+      padding: 10px 24px; font-family: 'Bungee', sans-serif; font-size: 13px; border-radius: 8px;
+      cursor: pointer; box-shadow: 0 0 10px #00ccff88;
+    }
+    #collect-warn-ok:hover { filter: brightness(1.15); }
+
+    /* Idle nag popup */
+    #idle-popup { position: absolute; inset: 0; z-index: 70; pointer-events: none; }
+    .idle-card {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: all;
+    }
+    .idle-card-box {
+      background: linear-gradient(145deg, #1a0033, #0d001a);
+      border: 3px solid #ff4444; border-radius: 16px;
+      padding: 24px 32px; text-align: center; max-width: 340px;
+      box-shadow: 0 0 30px #ff4444aa;
+      animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .idle-card-emoji { font-size: 40px; margin-bottom: 8px; }
+    .idle-card-title { font-family: 'Bungee Inline', sans-serif; font-size: 18px; color: #ff4444; text-shadow: 0 0 10px #ff4444; margin-bottom: 10px; }
+    .idle-card-msg { font-size: 13px; color: #ffcccc; font-family: sans-serif; line-height: 1.5; margin-bottom: 14px; }
+    .idle-card-penalty { font-size: 12px; color: #ff8888; font-family: sans-serif; margin-bottom: 14px; min-height: 18px; font-weight: bold; }
+    .idle-card-ok { background: #ff4444; color: white; border: none; padding: 10px 28px; font-family: 'Bungee', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; }
+    .idle-card-ok:hover { background: #cc0000; }
+
+    /* Tier upgrade popup */
+    #upgrade-popup {
+      display: none; position: absolute; inset: 0; z-index: 80;
+      align-items: center; justify-content: center; flex-direction: column;
+    }
+    #upgrade-popup.show { display: flex; }
+    #upgrade-bg { position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background 0.6s; }
+    #upgrade-bg.dark { background: rgba(0,0,0,0.92); }
+    #upgrade-box {
+      position: relative; border-radius: 20px; padding: 36px 48px;
+      text-align: center; max-width: 420px;
+      opacity: 0; transform: scale(0.3) rotate(-8deg);
+      transition: opacity 0.5s 0.4s, transform 0.5s 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    #upgrade-box.visible { opacity: 1; transform: scale(1) rotate(0deg); }
+    #upgrade-tier-icon { font-size: 72px; margin-bottom: 8px; }
+    #upgrade-title { font-family: 'Bungee Inline', sans-serif; font-size: 32px; margin-bottom: 6px; }
+    #upgrade-subtitle { font-size: 13px; font-family: sans-serif; margin-bottom: 20px; opacity: 0.9; line-height: 1.5; }
+    #upgrade-ok { font-family: 'Bungee', sans-serif; font-size: 15px; padding: 12px 36px; border: none; border-radius: 10px; cursor: pointer; transition: transform 0.1s; }
+    #upgrade-ok:hover { transform: scale(1.06); }
+
+    /* Volume slider */
+    #vol-slider-wrap { position: absolute; bottom: 14px; left: 14px; z-index: 20; display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.65); border: 1px solid #ffd70055; border-radius: 20px; padding: 5px 10px; }
+    #vol-slider-wrap label { font-size: 11px; color: #ffd700; font-family: 'Bungee', sans-serif; cursor: default; }
+    #vol-slider { width: 70px; cursor: pointer; accent-color: #ffd700; }
+
+    /* Intro popup */
+    #intro-popup { position: absolute; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.88); }
+    #intro-popup.hidden { display: none; }
+    #intro-box { background: radial-gradient(ellipse at top, #2a0050 0%, #0d0020 100%); border: 2px solid #ffd700; border-radius: 12px; box-shadow: 0 0 40px #ffd70055, inset 0 0 30px #1a003388; padding: 32px 40px 28px; max-width: 560px; width: 90%; text-align: center; color: #fff; font-family: 'Bungee', sans-serif; }
+    #intro-box h2 { font-family: 'Bungee Inline', sans-serif; font-size: 26px; color: #ffd700; text-shadow: 0 0 18px #ffd700; margin: 0 0 16px; letter-spacing: 1px; }
+    #intro-box ul { list-style: none; padding: 0; margin: 0 0 22px; display: flex; flex-direction: column; gap: 10px; }
+    #intro-box li { font-size: 15px; color: #eeddff; letter-spacing: 0.3px; line-height: 1.4; }
+    #intro-start-btn { font-family: 'Bungee', sans-serif; font-size: 18px; padding: 11px 38px; background: #ffd700; color: #1a0033; border: none; border-radius: 8px; cursor: pointer; letter-spacing: 1px; box-shadow: 0 0 20px #ffd70088; transition: background 0.2s, box-shadow 0.2s; }
+    #intro-start-btn:hover { background: #ffe566; box-shadow: 0 0 30px #ffd700cc; }
+
+    /* Built-in video ad overlay (random tab only) */
+    #ad-video-overlay { position: absolute; inset: 0; z-index: 200; background: #000; display: none; }
+    #ad-video-overlay video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    #ad-unmute-btn { position: absolute; bottom: 14px; right: 14px; z-index: 201; background: rgba(0,0,0,0.7); border: 1px solid #ffd70088; border-radius: 20px; color: #ffd700; font-family: 'Bungee', sans-serif; font-size: 13px; padding: 5px 14px; cursor: pointer; letter-spacing: 0.5px; }
+    #ad-unmute-btn:hover { background: rgba(30,0,60,0.85); }
+
+    /* Confetti canvas */
+    #confetti-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 45; }
+
+    /* ═══════════════════════════════════════
+       WHEEL-SPECIFIC CSS
+       ═══════════════════════════════════════ */
+    #game-wheel {
+      position: absolute; inset: 0;
+      pointer-events: none;
+    }
+    #wheel-area {
+      position: absolute;
+      top: 144px; left: 50%; transform: translateX(-50%) scale(0.9);
+      transform-origin: top center;
+      width: 380px; height: 380px;
+      z-index: 5;
+      pointer-events: all;
+    }
+    #wheel-canvas {
+      display: block;
+      filter: drop-shadow(0 0 18px #ff00ff88) drop-shadow(0 0 36px #00ffff44);
+    }
+    #wheel-pointer {
+      position: absolute;
+      top: -14px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 28px solid #ffd700;
+      filter: drop-shadow(0 0 6px #ffd700);
+      z-index: 20;
+    }
+    #game-wheel #spin-btn {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      border: 4px solid #ffd700;
+      background: radial-gradient(circle, #ff4400, #8b0000);
+      color: #ffd700;
+      font-family: 'Bungee', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      z-index: 20;
+      box-shadow: 0 0 16px #ffd700, 0 0 32px #ff4400;
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-shadow: 1px 1px 2px #000;
+      pointer-events: all;
+    }
+    #game-wheel #spin-btn:hover:not(:disabled) {
+      transform: translate(-50%, -50%) scale(1.08);
+      box-shadow: 0 0 24px #ffd700, 0 0 48px #ff4400;
+    }
+    #game-wheel #spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ═══════════════════════════════════════
+       SLOT-SPECIFIC CSS
+       ═══════════════════════════════════════ */
+    #game-slot {
+      position: absolute; inset: 0;
+      pointer-events: none;
+    }
+    #slot-area {
+      position: absolute;
+      top: 144px; left: 50%; transform: translateX(-50%) scale(0.9);
+      transform-origin: top center;
+      width: 420px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0; z-index: 5;
+      pointer-events: all;
+    }
+    #slot-marquee {
+      width: 100%; padding: 6px 0 4px;
+      background: linear-gradient(180deg, #3a1a00 0%, #1a0a00 100%);
+      border: 3px solid #ffd700; border-bottom: none;
+      border-radius: 12px 12px 0 0;
+      text-align: center; font-size: 13px; color: #ffd700;
+      letter-spacing: 2px; text-shadow: 0 0 8px #ffd700;
+      box-shadow: 0 0 12px #ffd700aa;
+    }
+    #reels-window {
+      width: 100%; background: #050010;
+      border-left: 3px solid #ffd700; border-right: 3px solid #ffd700;
+      padding: 10px 12px;
+      display: flex; gap: 8px; justify-content: center; align-items: center;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 12px #ffd700aa;
+      position: relative;
+    }
+    .reel-viewport {
+      width: 104px; height: 264px;
+      overflow: hidden; border: 2px solid #ffd700; border-radius: 6px;
+      background: #000; position: relative;
+      box-shadow: inset 0 0 12px #00000099;
+    }
+    .reel-viewport::before, .reel-viewport::after {
+      content: ''; position: absolute; left: 0; right: 0; height: 68px;
+      z-index: 3; pointer-events: none;
+    }
+    .reel-viewport::before { top: 0; background: linear-gradient(180deg, #000e 0%, transparent 100%); }
+    .reel-viewport::after  { bottom: 0; background: linear-gradient(0deg, #000e 0%, transparent 100%); }
+    .reel-strip {
+      position: absolute; left: 0; right: 0; top: 0;
+      display: flex; flex-direction: column;
+      will-change: transform;
+    }
+    .reel-cell {
+      width: 100px; height: 88px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2px;
+      border-bottom: 1px solid rgba(255,215,0,0.15);
+      flex-shrink: 0;
+    }
+    .reel-cell .cell-icon { font-size: 32px; line-height: 1; }
+    .reel-cell img.cell-icon { width: 36px; height: 36px; object-fit: contain; }
+    .reel-cell .cell-icon.btc-icon {
+      font-size: 26px; width: 44px; height: 44px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #ffd700, #b8860b);
+      color: #5a2d00; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 8px #ffd700, 0 0 16px #ff9900; font-weight: bold; flex-shrink: 0;
+    }
+    .reel-cell .cell-label {
+      font-size: 8.5px; color: #fff; text-align: center;
+      font-family: 'Bungee', sans-serif; line-height: 1.2;
+      text-shadow: 1px 1px 2px #000; max-width: 90px; word-break: break-word;
+    }
+    #win-line {
+      position: absolute; left: 12px; right: 12px;
+      top: 50%; transform: translateY(-50%); height: 88px;
+      border-top: 2px solid #ffd700cc; border-bottom: 2px solid #ffd700cc;
+      pointer-events: none; z-index: 4; background: rgba(255,215,0,0.04);
+    }
+    #win-line.flash { animation: winline-flash 0.25s steps(1) 8; }
+    @keyframes winline-flash {
+      0%, 100% { border-color: #ffd700cc; background: rgba(255,215,0,0.04); }
+      50% { border-color: #ffffffff; background: rgba(255,255,255,0.22); }
+    }
+    #slot-bottom {
+      width: 100%;
+      background: linear-gradient(0deg, #3a1a00 0%, #1a0a00 100%);
+      border: 3px solid #ffd700; border-top: none;
+      border-radius: 0 0 12px 12px;
+      padding: 10px 16px;
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+      box-shadow: 0 0 12px #ffd700aa;
+    }
+    #game-slot #spin-btn {
+      padding: 10px 28px;
+      background: radial-gradient(circle at 40% 35%, #ff6600, #8b0000);
+      color: #ffd700; font-family: 'Bungee', sans-serif; font-size: 16px;
+      border: 3px solid #ffd700; border-radius: 10px; cursor: pointer;
+      box-shadow: 0 0 14px #ffd700, 0 0 28px #ff4400;
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-shadow: 1px 1px 2px #000; letter-spacing: 1px;
+    }
+    #game-slot #spin-btn:hover:not(:disabled) {
+      transform: scale(1.07); box-shadow: 0 0 22px #ffd700, 0 0 44px #ff4400;
+    }
+    #game-slot #spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .slot-coin { font-size: 22px; animation: coin-spin 3s linear infinite; }
+    @keyframes coin-spin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+    #near-miss-msg {
+      display: none; position: absolute;
+      top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.85); border: 2px solid #ff4400; border-radius: 8px;
+      padding: 6px 18px; font-size: 12px; color: #ff8844; z-index: 20;
+      white-space: nowrap; font-family: 'Bungee', sans-serif; text-shadow: 0 0 8px #ff4400;
+    }
+
+    /* ═══════════════════════════════════════
+       SCRATCH-SPECIFIC CSS
+       ═══════════════════════════════════════ */
+    #game-scratch {
+      position: absolute; inset: 0;
+      pointer-events: none;
+    }
+    #card-area {
+      position: absolute;
+      top: 144px; left: 50%; transform: translateX(-50%) scale(0.9);
+      transform-origin: top center;
+      width: 420px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0; z-index: 5;
+      pointer-events: all;
+    }
+    #card-anim-wrap { width: 420px; perspective: 800px; }
+    #card-inner {
+      width: 100%; transform-style: preserve-3d;
+      transition: transform 0.5s ease-in;
+    }
+    #card-inner.discard { animation: card-discard 0.6s ease-in forwards; }
+    @keyframes card-discard {
+      0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+      60%  { transform: translateY(60px) rotate(8deg) scale(0.9); opacity: 0.6; }
+      100% { transform: translateY(200px) rotate(18deg) scale(0.6); opacity: 0; }
+    }
+    #card-inner.deal-in { animation: card-deal 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    @keyframes card-deal {
+      0%   { transform: translateY(-120px) scale(0.7); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    #card-header {
+      width: 100%; padding: 6px 0 4px;
+      background: linear-gradient(180deg, #3a1a00 0%, #1a0a00 100%);
+      border: 3px solid #ffd700; border-bottom: none;
+      border-radius: 12px 12px 0 0;
+      text-align: center; font-size: 13px; color: #ffd700;
+      letter-spacing: 2px; text-shadow: 0 0 8px #ffd700; box-shadow: 0 0 12px #ffd700aa;
+    }
+    #card-body {
+      width: 100%; background: #050010;
+      border-left: 3px solid #ffd700; border-right: 3px solid #ffd700;
+      padding: 6px 16px 10px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 12px #ffd700aa;
+    }
+    #scratch-hint { font-size: 11px; color: #ffcc66; letter-spacing: 1px; font-family: sans-serif; text-align: center; height: 16px; }
+    #scratch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 110px);
+      grid-template-rows: repeat(3, 90px);
+      gap: 6px;
+    }
+    .scratch-cell {
+      position: relative; width: 110px; height: 90px;
+      border-radius: 6px; overflow: hidden; cursor: crosshair;
+      border: 2px solid #ffd70066;
+      user-select: none; -webkit-user-select: none;
+    }
+    .cell-prize {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3px;
+      background: #0a001e;
+      user-select: none; -webkit-user-select: none; pointer-events: none;
+    }
+    .cell-prize .prize-icon { font-size: 30px; line-height: 1; }
+    .cell-prize .prize-icon.btc-icon {
+      font-size: 22px; width: 40px; height: 40px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #ffd700, #b8860b);
+      color: #5a2d00; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 8px #ffd700, 0 0 16px #ff9900; font-weight: bold;
+    }
+    .cell-prize .prize-lbl { font-size: 8px; color: #fff; text-align: center; max-width: 100px; line-height: 1.2; font-family: 'Bungee', sans-serif; }
+    .scratch-canvas { position: absolute; inset: 0; cursor: crosshair; touch-action: none; }
+    .scratch-cell.win-cell {
+      box-shadow: 0 0 0 3px #ffd700, 0 0 12px #ffd700, 0 0 24px #ff9900;
+      border-color: #ffd700;
+      animation: win-cell-pulse 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes win-cell-pulse {
+      from { box-shadow: 0 0 0 3px #ffd700, 0 0 12px #ffd700; }
+      to   { box-shadow: 0 0 0 4px #fff, 0 0 20px #ffd700, 0 0 36px #ff9900; }
+    }
+    #scratch-progress { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+    #scratch-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ffd700, #ff9900); border-radius: 3px; transition: width 0.1s; }
+    #card-footer {
+      width: 100%; background: linear-gradient(0deg, #3a1a00 0%, #1a0a00 100%);
+      border: 3px solid #ffd700; border-top: none; border-radius: 0 0 12px 12px;
+      padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 0 12px #ffd700aa;
+    }
+    #card-number { font-size: 11px; color: #ffd70088; letter-spacing: 1px; }
+    #new-card-btn {
+      padding: 8px 22px;
+      background: radial-gradient(circle at 40% 35%, #ff6600, #8b0000);
+      color: #ffd700; font-family: 'Bungee', sans-serif; font-size: 13px;
+      border: 2px solid #ffd700; border-radius: 8px; cursor: pointer;
+      box-shadow: 0 0 12px #ffd700, 0 0 24px #ff4400;
+      transition: transform 0.1s, box-shadow 0.1s; letter-spacing: 0.5px;
+    }
+    #new-card-btn:hover:not(:disabled) { transform: scale(1.06); box-shadow: 0 0 20px #ffd700; }
+    #new-card-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* Loss popup (scratch-specific) */
+    #loss-popup { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.82); z-index: 50; align-items: center; justify-content: center; flex-direction: column; pointer-events: all; }
+    #loss-popup.show { display: flex; }
+    #loss-box { background: linear-gradient(145deg, #0d001a, #1a0a2e); border: 3px solid #8855ff; border-radius: 16px; padding: 28px 40px; text-align: center; box-shadow: 0 0 30px #8855ffaa, 0 0 60px #44228866; animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); max-width: 320px; }
+    #loss-emoji { font-size: 64px; margin-bottom: 6px; }
+    #loss-title { font-family: 'Bungee Inline', sans-serif; font-size: 30px; color: #cc88ff; text-shadow: 0 0 12px #8855ff; margin-bottom: 8px; }
+    #loss-msg { font-size: 13px; color: #ccaaff; font-family: sans-serif; margin-bottom: 18px; line-height: 1.6; }
+    #loss-ok { background: linear-gradient(135deg, #8855ff, #5533cc); color: white; border: none; padding: 11px 32px; font-family: 'Bungee', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; box-shadow: 0 0 10px #8855ff88; transition: transform 0.1s; }
+    #loss-ok:hover { transform: scale(1.05); }
   </style>
 </head>
-
 <body>
-  <div id="overlay-container">
-    <!-- We've added a sample button. Feel free to remove it: -->
-    <button id="skip">
-      Skip Ad...
-    </button>
+<div id="overlay-container">
+
+  <!-- Casino banner -->
+  <div id="banner">
+    <div class="banner-rule top"></div>
+    <div class="banner-rule bottom"></div>
+    <div id="banner-title">🍀 INFINITE LUCK CASINO 🍀</div>
+    <div id="banner-sub">❖ &nbsp; Spin to Win &nbsp; ❖ &nbsp; Play Free &nbsp; ❖ &nbsp; Claim Your Prize &nbsp; ❖</div>
   </div>
 
-  <script type="text/javascript">
-    (function(window, document){
-      // This is how you tell the parent window that the ad was successfully skipped.
-      function adSuccess() {
-        window.top.postMessage({ type: 'success' }, '*');
+  <!-- Background stars (inserted by JS) -->
+  <div id="light-strip-top"></div>
+  <div id="light-strip-bottom"></div>
+
+  <div id="casino-title">🎡 PRIZE WHEEL 🎡</div>
+
+  <!-- Left: prizes won -->
+  <div id="prizes-panel">
+    <h3>🏆 PRIZES WON</h3>
+    <ul id="prizes-list"><li id="prizes-empty" style="list-style:none;border:none;">No prizes yet!</li></ul>
+    <button id="collect-prizes-btn">🎁 COLLECT PRIZES!</button>
+  </div>
+
+  <!-- WHEEL GAME -->
+  <div id="game-wheel" style="display:none">
+    <div id="wheel-area">
+      <div id="wheel-pointer"></div>
+      <canvas id="wheel-canvas" width="380" height="380"></canvas>
+      <button id="spin-btn" disabled>SPIN!</button>
+    </div>
+  </div>
+
+  <!-- SLOT GAME -->
+  <div id="game-slot" style="display:none">
+    <div id="slot-area">
+      <div id="slot-marquee">✦ INSERT TICKET TO PLAY ✦</div>
+      <div id="reels-window">
+        <div class="reel-viewport" id="reel-0">
+          <div class="reel-strip" id="strip-0"></div>
+        </div>
+        <div class="reel-viewport" id="reel-1">
+          <div class="reel-strip" id="strip-1"></div>
+        </div>
+        <div class="reel-viewport" id="reel-2">
+          <div class="reel-strip" id="strip-2"></div>
+        </div>
+        <div id="win-line"></div>
+      </div>
+      <div id="slot-bottom">
+        <span class="slot-coin">🪙</span>
+        <button id="spin-btn" disabled>🎰 SPIN!</button>
+        <span class="slot-coin" style="animation-delay:-1.5s">🪙</span>
+      </div>
+      <div id="near-miss-msg">SO CLOSE! Try again! 🔥</div>
+    </div>
+  </div>
+
+  <!-- SCRATCH GAME -->
+  <div id="game-scratch" style="display:none">
+    <div id="card-area">
+      <div id="card-anim-wrap">
+        <div id="card-inner">
+          <div id="card-header">✦ SCRATCH TO WIN ✦</div>
+          <div id="card-body">
+            <div id="scratch-hint">Scratch with mouse or finger!</div>
+            <div id="scratch-grid"><!-- 9 cells injected by JS --></div>
+            <div id="scratch-progress"><div id="scratch-progress-fill"></div></div>
+          </div>
+          <div id="card-footer">
+            <span id="card-number">CARD #1</span>
+            <button id="new-card-btn" disabled>🃏 NEW CARD</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Loss popup lives inside scratch game div -->
+    <div id="loss-popup">
+      <div id="loss-box">
+        <div id="loss-emoji">😔</div>
+        <div id="loss-title">NO WIN THIS TIME</div>
+        <div id="loss-msg">You uncovered all the symbols<br>but no matching line. Better luck<br>on the next card!</div>
+        <button id="loss-ok">TRY ANOTHER CARD!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: ticket counter -->
+  <div id="ticket-panel">
+    <h3>🎟️ YOUR TICKETS</h3>
+    <div id="ticket-count">5</div>
+    <div id="ticket-icon">🎟️</div>
+    <div id="ticket-label">Use tickets to play!</div>
+  </div>
+
+  <!-- Fake winners ticker -->
+  <div id="winners-ticker">
+    <h3><span id="winner-dot"></span><span id="winner-live-label">LIVE WINNERS</span></h3>
+    <div id="winner-msg-wrap">
+      <div class="winner-msg" id="winner-msg"></div>
+    </div>
+  </div>
+
+  <!-- Intro popup -->
+  <div id="intro-popup">
+    <div id="intro-box">
+      <h2 id="intro-game-title">🍀 INFINITE LUCK CASINO</h2>
+      <ul id="intro-bullets">
+        <li>🎟️ Use tickets to play the game!</li>
+        <li>🎮 Play to win amazing prizes!</li>
+        <li>🎁 Redeem your prizes on our casino website!</li>
+        <li>⏩ Some prizes will help you skip the ad faster!</li>
+        <li>🍀 Good luck!</li>
+      </ul>
+      <button id="intro-start-btn">🎲 Let's Play!</button>
+    </div>
+  </div>
+
+  <!-- Skip button -->
+  <button id="skip" style="display:none;">
+    ⏭ Skip Ad
+    <span id="skip-timer"></span>
+  </button>
+
+  <!-- Idle nag popup -->
+  <div id="idle-popup"></div>
+
+  <!-- Win popup -->
+  <div id="win-popup">
+    <div id="win-box">
+      <div id="win-title">YOU WON!</div>
+      <div id="win-prize-icon">🎁</div>
+      <div id="win-prize-name">Prize</div>
+      <div id="win-flavor"></div>
+      <button id="collect-btn">COLLECT!</button>
+    </div>
+  </div>
+
+  <!-- Dog kiss popup -->
+  <div id="dog-popup">
+    <div id="dog-box">
+      <div id="dog-title">YOU WON A DOG!</div>
+      <div id="dog-instructions">Prove your love for your new dog by kissing him before taking him home!</div>
+      <div id="dog-img-wrap"><img id="dog-img" src="assets/Doot.png" alt="Dog"></div>
+      <div id="dog-feedback"></div>
+      <button id="dog-collect-btn">NEW FRIEND ❤️ (<span id="dog-timer">120</span>s)</button>
+    </div>
+  </div>
+  <button id="dbg-dog">🐕 TEST DOG</button>
+
+  <!-- Sniper Minigame -->
+  <div id="sniper-popup">
+    <div id="sniper-box">
+      <img id="sniper-building" src="assets/dusty.png" alt="">
+      <img id="sniper-target" src="assets/target.png" alt="">
+      <canvas id="sniper-canvas"></canvas>
+      <div id="sniper-hud">
+        <span id="sniper-hits">🎯 0/5</span>
+        <span id="sniper-timer-hud">⏱ 5s</span>
+        <span id="sniper-misses">❌ 0/1</span>
+      </div>
+      <div id="sniper-intro" class="show">
+        <div id="sniper-intro-box">
+          <div id="sniper-intro-title">🔫 AWP DRAGON LORE</div>
+          <div id="sniper-intro-body">
+            You won a legendary AWP Dragon Lore skin!<br><br>
+            <strong>Shoot 5 targets on time</strong> to prove you're worthy of the reward.<br><br>
+            Each target gives you <strong>5 seconds</strong>. You can only miss <strong>once</strong>.
+          </div>
+          <button id="sniper-intro-btn">🎯 READY? FIRE!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="dbg-sniper">🔫 TEST AWP</button>
+
+  <!-- Maze Minigame (BTC) -->
+  <div id="maze-popup">
+    <div id="maze-box">
+      <canvas id="maze-canvas"></canvas>
+      <div id="maze-banner">
+        <div id="maze-banner-title">₿ BITCOIN MAZE ₿</div>
+        <div id="maze-banner-sub">Find The Wallet • Escape With The Coin</div>
+      </div>
+      <div id="maze-intro" class="show">
+        <div id="maze-intro-box">
+          <div id="maze-intro-title">₿ BITCOIN MAZE</div>
+          <div id="maze-intro-body">
+            You won the ₿itcoin!<br><br>
+            <strong>Guide the Kraken through the maze</strong> to reach the exit and claim it.<br><br>
+            Click and drag him with your mouse or finger — and he will follow. You have <strong>30 seconds</strong>.
+          </div>
+          <button id="maze-intro-btn">🐙 LET'S GO!</button>
+        </div>
+      </div>
+      <div id="maze-hud"><span id="maze-timer-hud">⏱ 30s</span></div>
+    </div>
+  </div>
+  <button id="dbg-maze">₿ TEST MAZE</button>
+  <div id="dbg-safety-net">⏱ Safety net: --:--</div>
+
+  <!-- Minigame Fail Popup -->
+  <div id="minigame-fail-popup">
+    <div id="minigame-fail-box">
+      <div id="minigame-fail-title">❌ FAILED!</div>
+      <div id="minigame-fail-msg"></div>
+      <button id="minigame-fail-btn">OK...</button>
+    </div>
+  </div>
+
+  <!-- Tier upgrade popup -->
+  <div id="upgrade-popup">
+    <div id="upgrade-bg"></div>
+    <div id="upgrade-box">
+      <div id="upgrade-tier-icon">🌟</div>
+      <div id="upgrade-title">UPGRADE!</div>
+      <div id="upgrade-subtitle">A new tier awaits!</div>
+      <button id="upgrade-ok">LET'S GO!</button>
+    </div>
+  </div>
+
+  <!-- Skip warning popup (shown on first skip click after timer runs out) -->
+  <div id="skip-warn-popup">
+    <div id="skip-warn-box">
+      <h2>⚠️ WAIT!</h2>
+      <p id="skip-warn-msg">You have unspent tickets! Please use all your tickets before closing the ad.</p>
+      <button id="skip-warn-ok">OK, I'll Keep Playing!</button>
+    </div>
+  </div>
+
+  <!-- Lose prizes confirm popup -->
+  <div id="lose-prizes-popup">
+    <div id="lose-prizes-box">
+      <div style="font-size:40px;margin-bottom:8px;">⚠️</div>
+      <h2>ABANDON YOUR PRIZES?</h2>
+      <p>If you skip the ad now, <strong>all your won prizes will be lost forever</strong>. Are you sure?</p>
+      <div class="lp-buttons">
+        <button id="lp-cancel-btn">↩ No, Keep Playing</button>
+        <button id="lp-confirm-btn">Skip &amp; Lose Prizes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Out-of-tickets popup (drain phase complete) -->
+  <div id="out-of-tickets-popup">
+    <div id="out-of-tickets-box">
+      <div class="oot-emoji">😱</div>
+      <h2>OUT OF TICKETS!</h2>
+      <p>What a shame to leave now — you were on such a roll!<br>Want <strong>3 more free tickets</strong> to keep playing?</p>
+      <div class="oot-buttons">
+        <button id="oot-more-btn">🎟️ 3 More Tickets!</button>
+        <button id="oot-skip-btn">Skip the Ad</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collect prizes warn popup -->
+  <div id="collect-warn-popup">
+    <div id="collect-warn-box">
+      <div class="cw-emoji">🤩</div>
+      <h2 id="collect-warn-heading">YOU'RE SO CLOSE TO WINNING MORE!</h2>
+      <p id="collect-warn-msg">Keep playing!</p>
+      <button id="collect-warn-ok">LET'S KEEP WINNING! 🚀</button>
+    </div>
+  </div>
+
+  <!-- Volume -->
+  <div id="vol-slider-wrap">
+    <label id="vol-speaker">🔊</label>
+    <input type="range" id="vol-slider" min="0" max="1" step="0.01" value="0.5">
+  </div>
+
+  <!-- Confetti canvas -->
+  <canvas id="confetti-canvas" width="960" height="540"></canvas>
+
+  <!-- Built-in video ad overlay (shown only for ?game=random) -->
+  <div id="ad-video-overlay">
+    <video id="ad-video" src="assets/ILC-AD.mp4" playsinline muted preload="auto"></video>
+    <button id="ad-unmute-btn">🔇 Muted — Click to Unmute</button>
+  </div>
+
+</div>
+
+<script>
+(function(window, document) {
+
+  // ─────────────────────────────────────────
+  // ROUTING — determine which game to show
+  // ─────────────────────────────────────────
+  var _params = new URLSearchParams(window.location.search);
+  var _game = (_params.get('game') || 'random').toLowerCase();
+  // Append ?debug to the URL to reveal test buttons and the safety-net countdown
+  const IS_DEBUG = _params.has('debug');
+  const IS_RANDOM_TAB = (_game === 'random');
+  if (_game === 'random') {
+    var _games = ['wheel', 'slot', 'scratch'];
+    _game = _games[Math.floor(Math.random() * _games.length)];
+  }
+  if (!['wheel', 'slot', 'scratch'].includes(_game)) _game = 'wheel';
+  const ACTIVE_GAME = _game;
+
+  // Show the correct game div, hide others
+  ['wheel', 'slot', 'scratch'].forEach(function(g) {
+    document.getElementById('game-' + g).style.display = (g === ACTIVE_GAME) ? '' : 'none';
+  });
+
+  // Casino title
+  const casinoTitleEl = document.getElementById('casino-title');
+  if      (ACTIVE_GAME === 'slot')    casinoTitleEl.textContent = '🎰 SLOT MACHINE 🎰';
+  else if (ACTIVE_GAME === 'scratch') casinoTitleEl.textContent = '🃏 SCRATCH CARD 🃏';
+  else                                casinoTitleEl.textContent = '🎡 PRIZE WHEEL 🎡';
+
+  // Intro popup content
+  const introTitle   = document.getElementById('intro-game-title');
+  if (ACTIVE_GAME === 'slot') {
+    introTitle.textContent = '🎰 SLOT MACHINE 🎰';
+  } else if (ACTIVE_GAME === 'scratch') {
+    introTitle.textContent = '🃏 SCRATCH CARD 🃏';
+  } else {
+    introTitle.textContent = '🎡 PRIZE WHEEL 🎡';
+  }
+
+  // Skip-warn message
+  document.getElementById('skip-warn-msg').textContent =
+    ACTIVE_GAME === 'scratch'
+      ? 'You have unscratched cards! Please use all your tickets before closing the ad.'
+      : 'You have unspent tickets! Please use all your tickets before closing the ad.';
+
+  // ─────────────────────────────────────────
+  // TIER CONFIGS — WHEEL
+  // ─────────────────────────────────────────
+  // ─────────────────────────────────────────
+  // SHARED TIER PRIZES — one definition per tier, used by all 3 games.
+  // color/textColor fields are only consumed by the wheel slice renderer.
+  // ─────────────────────────────────────────
+  const TIER_PRIZES = [
+    { // base
+      prizes: [
+        { id:'upgrade_gold', label:'GOLDEN WHEEL',      icon:'⭐', color:'#b8860b', textColor:'#fff700', ticketBonus:0,  isFree:false, flavor:'🌟 UNLOCKING THE GOLDEN WHEEL...', isUpgrade:true },
+        { id:'crowpro_1mo',  label:'CrowPro 1mo',       icon:'🎮', color:'#2a0a4a', textColor:'#cc88ff', ticketBonus:0,  isFree:false, flavor:'One month of CrowPro — enjoy!', imgIcon:'assets/CrowPro.png' },
+        { id:'free_spin',    label:'FREE TICKET',       icon:'🎡', color:'#00cc44', textColor:'#fff',    ticketBonus:0,  isFree:true,  flavor:'Next game is on us!' },
+        { id:'credits_100',  label:'$100 Credits',      icon:'💵', color:'#006622', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'One hundred casino bucks!' },
+        { id:'google_200',   label:'$200 Gift Card',  icon:'💳', color:'#0d2240', textColor:'#4fc3f7', ticketBonus:0,  isFree:false, flavor:'$200 Gift Card! 🎉 You can redeem it or give it away!' },
+        { id:'windows_rg',   label:'Windows RG',        icon:'🪟', color:'#0a1a30', textColor:'#88bbff', ticketBonus:0,  isFree:false, flavor:'A genuine Windows RG license! Legendary software!', imgIcon:'assets/WindowsRG.png' },
+        { id:'seraph_1mo',   label:'Seraph Secure 1mo', icon:'🛡️', color:'#003322', textColor:'#00ffaa', ticketBonus:0,  isFree:false, flavor:'One month of Seraph Secure protection!', imgIcon:'assets/SeraphSecure.png' },
+        { id:'tickets_5',    label:'5 Tickets',         icon:'🎟️', color:'#0088ff', textColor:'#fff',    ticketBonus:5,  isFree:false, flavor:'5 free spins coming right up!' },
+        { id:'credits_200',  label:'$200 Credits',      icon:'💵', color:'#005518', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'Two hundred smackers to use on the Casino website!' },
+        { id:'google_100',   label:'$100 Gift Card',  icon:'💳', color:'#1a3a5c', textColor:'#4fc3f7', ticketBonus:0,  isFree:false, flavor:'$100 Gift Card! 🎉 NEVER share your code with anyone!' },
+        { id:'bike',         label:'BIKE!',             icon:'🚲', color:'#553300', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'🚲 A shiny new bicycle! Stay fit!', isJackpot:true },
+        { id:'tickets_10',   label:'10 Tickets',        icon:'🎟️', color:'#aa00ff', textColor:'#fff',    ticketBonus:10, isFree:false, flavor:"10 tickets! You're on fire!" },
+        { id:'skip_30',      label:'-30s Skip Timer',   icon:'⏩', color:'#005533', textColor:'#00ffaa', ticketBonus:0,  isFree:false, flavor:'Nice! Your skip timer just got 30 seconds shorter!', skipReduction:30 },
+      ],
+      weights: [2,4,3,8,4,4,2,5,4,8,2,3,4],
+    },
+    { // gold
+      prizes: [
+        { id:'upgrade_dia',  label:'DIAMOND WHEEL',     icon:'💎', color:'#1a3a6e', textColor:'#aaddff', ticketBonus:0,  isFree:false, flavor:'💎 UNLOCKING THE DIAMOND WHEEL...', isUpgrade:true },
+        { id:'crowpro_6mo',  label:'CrowPro 6mo',       icon:'🎮', color:'#2a0a4a', textColor:'#cc88ff', ticketBonus:0,  isFree:false, flavor:'Six months of CrowPro — premium access!', imgIcon:'assets/CrowPro.png' },
+        { id:'free_spin',    label:'FREE TICKET',       icon:'🎡', color:'#00aa33', textColor:'#fff',    ticketBonus:0,  isFree:true,  flavor:'Next game is on us!' },
+        { id:'dog',          label:'Dog',               icon:'🐕', color:'#3a1e00', textColor:'#ffcc88', ticketBonus:0,  isFree:false, flavor:'It got lost and found a new friend!', imgIcon:'assets/Doot.png' },
+        { id:'credits_200',  label:'$200 Credits',      icon:'💵', color:'#005518', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'Two hundred smackers to use on the Casino website!' },
+        { id:'google_500',   label:'$500 Gift Card',  icon:'💳', color:'#1a3a5c', textColor:'#4fc3f7', ticketBonus:0,  isFree:false, flavor:"$500 Gift Card! 🎉 Keep that code safe — never share it with ANYONE!" },
+        { id:'crowpro_life', label:'CrowPro Lifetime',  icon:'👑', color:'#1e0040', textColor:'#ff88ff', ticketBonus:0,  isFree:false, flavor:'CrowPro — LIFETIME access! Never pay again! CA-CAW!', imgIcon:'assets/CrowPro.png' },
+        { id:'wwww',         label:'WWWW Gold',icon:'🏆', color:'#2a1800', textColor:'#ffe066', ticketBonus:0,  isFree:false, flavor:'The WWWWTSACTP Gold Standard Protection package!', imgIcon:'assets/WWWW.png' },
+        { id:'tickets_5',    label:'5 Gold Tickets',    icon:'🌟', color:'#0077dd', textColor:'#fff',    ticketBonus:5,  isFree:false, flavor:'5 Golden Tickets! The riches grow!' },
+        { id:'credits_500',  label:'$500 Credits',      icon:'💵', color:'#006622', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'FIVE HUNDRED casino dollars! Redeemable on our website!' },
+        { id:'scooter',      label:'Mobility Scooter',  icon:'🦼', color:'#553300', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'🦼 A brand new mobility scooter!', isJackpot:true },
+        { id:'tickets_10',   label:'10 Gold Tickets',   icon:'🌟', color:'#8800cc', textColor:'#fff',    ticketBonus:10, isFree:false, flavor:'10 Golden Tickets! Extraordinary luck!' },
+        { id:'skip_60',      label:'-60s Skip Timer',   icon:'⏩', color:'#005533', textColor:'#00ffaa', ticketBonus:0,  isFree:false, flavor:'Whoa! 60 whole seconds off your skip timer!', skipReduction:60 },
+      ],
+      weights: [2,4,3,1,8,4,2,2,5,4,2,3,2],
+    },
+    { // diamond
+      prizes: [
+        { id:'btc',          label:'1 BITCOIN!',        icon:'₿',  color:'#3d1f00', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'₿ ONE FULL BITCOIN! (~$90,000!) LEGENDARY!', isJackpot:true, customBorder:'#ffd700' },
+        { id:'free_spin',    label:'FREE TICKET',       icon:'🎡', color:'#00aa33', textColor:'#fff',    ticketBonus:0,  isFree:true,  flavor:'Next game is on us!' },
+        { id:'dog',          label:'Dog',               icon:'🐕', color:'#3a1e00', textColor:'#ffcc88', ticketBonus:0,  isFree:false, flavor:'It got lost and found a new friend!', imgIcon:'assets/Doot.png' },
+        { id:'credits_500',  label:'$500 Credits',      icon:'💵', color:'#005518', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'FIVE HUNDRED casino dollars! Redeemable on our website!' },
+        { id:'google_1000',  label:'$1000 Gift Card', icon:'💳', color:'#1a3a5c', textColor:'#4fc3f7', ticketBonus:0,  isFree:false, flavor:"$1000 Gift Card! 🎉 Never share that code — not even with your mum!" },
+        { id:'awp_dl',       label:'AWP Dragon Lore',   icon:'🔫', color:'#1a0a00', textColor:'#ff8800', ticketBonus:0,  isFree:false, flavor:'THE AWP DRAGON LORE! LEGENDARY SKIN!', imgIcon:'assets/awp-dl.png', isJackpot:true },
+        { id:'skip_ad',      label:'Skip Ad',           icon:'⏭️', color:'#002200', textColor:'#00ff88', ticketBonus:0,  isFree:false, flavor:'WAIT. You can actually skip the ad?!' },
+        { id:'tickets_5',    label:'5 Diamond Tickets', icon:'💎', color:'#0066cc', textColor:'#fff',    ticketBonus:5,  isFree:false, flavor:'5 Diamond Tickets! Pure luxury!' },
+        { id:'credits_1000', label:'$1000 Credits',     icon:'💵', color:'#006622', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'One thousand casino bucks!' },
+        { id:'google_500',   label:'$500 Gift Card',  icon:'💳', color:'#0d2240', textColor:'#4fc3f7', ticketBonus:0,  isFree:false, flavor:"$500 Gift Card! 🎉 That code is YOURS — claim it on our website!" },
+        { id:'car',          label:'WIN A CAR!',        icon:'🚗', color:'#cc0000', textColor:'#ffd700', ticketBonus:0,  isFree:false, flavor:'🚨 A BRAND NEW RED CAR! 🚨 (claim in 72h)', isJackpot:true },
+        { id:'tickets_10',   label:'10 Diamond Tickets',icon:'💎', color:'#6600aa', textColor:'#fff',    ticketBonus:10, isFree:false, flavor:'10 Diamond Tickets! Extraordinary!' },
+        { id:'skip_60',      label:'-60s Skip Timer',   icon:'⏩', color:'#005533', textColor:'#00ffaa', ticketBonus:0,  isFree:false, flavor:'Whoa! 60 whole seconds off your skip timer!', skipReduction:60 },
+      ],
+      weights: [1,3,1,8,4,1,0,5,4,8,2,3,1],
+    },
+  ];
+
+  const TIERS_WHEEL = [
+    {
+      id: 'base', name: '🎡 PRIZE WHEEL 🎡',
+      ticketLabel: '🎟️ YOUR TICKETS', ticketIcon: '🎟️', ticketName: 'Tickets',
+      bg: 'radial-gradient(ellipse at center, #1a0a2e 0%, #0d0618 60%, #000 100%)',
+      titleColor: '#ffd700',
+      titleShadow:  '0 0 10px #ff9900, 0 0 24px #ff4400, 2px 2px 0 #8b0000',
+      titleShadow2: '0 0 20px #ffcc00, 0 0 40px #ff6600, 2px 2px 0 #8b0000',
+      panelBorder: '#ffd700', panelGlow: '#ffd700aa',
+      wheelGlow: 'drop-shadow(0 0 18px #ff00ff88) drop-shadow(0 0 36px #00ffff44)',
+      pointerColor: '#ffd700',
+      bulbColors: ['#ff0044','#ffd700','#00ffcc','#ff6600','#aa00ff','#00aaff'],
+      upgradeSliceColor: '#b8860b', upgradeGlowColor: '#ffd700',
+      prizes: TIER_PRIZES[0].prizes,
+      baseWeights: TIER_PRIZES[0].weights,
+    },
+    {
+      id: 'gold', name: '🌟 GOLDEN WHEEL 🌟',
+      ticketLabel: '🌟 GOLDEN TICKETS', ticketIcon: '🌟', ticketName: 'Golden Tickets',
+      bg: 'radial-gradient(ellipse at center, #2a1800 0%, #1a0e00 60%, #000 100%)',
+      titleColor: '#ffe066',
+      titleShadow:  '0 0 12px #ffcc00, 0 0 28px #ff9900, 2px 2px 0 #7a4800',
+      titleShadow2: '0 0 24px #ffe066, 0 0 48px #ffcc00, 2px 2px 0 #7a4800',
+      panelBorder: '#ffe066', panelGlow: '#ffe066aa',
+      wheelGlow: 'drop-shadow(0 0 22px #ffd70099) drop-shadow(0 0 44px #ffaa0055)',
+      pointerColor: '#ffe066',
+      bulbColors: ['#ffd700','#ffaa00','#ffe066','#ff8800','#ffcc44','#ffdd88'],
+      upgradeSliceColor: '#1a3a6e', upgradeGlowColor: '#00aaff',
+      prizes: TIER_PRIZES[1].prizes,
+      baseWeights: TIER_PRIZES[1].weights,
+    },
+    {
+      id: 'diamond', name: '💎 DIAMOND WHEEL 💎',
+      ticketLabel: '💎 DIAMOND TICKETS', ticketIcon: '💎', ticketName: 'Diamond Tickets',
+      bg: 'radial-gradient(ellipse at center, #001828 0%, #000d18 60%, #000 100%)',
+      titleColor: '#aaddff',
+      titleShadow:  '0 0 12px #00ccff, 0 0 28px #0088ff, 2px 2px 0 #003366',
+      titleShadow2: '0 0 24px #aaddff, 0 0 48px #00aaff, 2px 2px 0 #003366',
+      panelBorder: '#00ccff', panelGlow: '#00ccffaa',
+      wheelGlow: 'drop-shadow(0 0 22px #00ccff88) drop-shadow(0 0 44px #0088ff44)',
+      pointerColor: '#00ccff',
+      bulbColors: ['#00ccff','#0088ff','#aaddff','#0044cc','#66bbff','#88ddff'],
+      upgradeSliceColor: '#333', upgradeGlowColor: '#aaa',
+      prizes: TIER_PRIZES[2].prizes,
+      baseWeights: TIER_PRIZES[2].weights,
+    },
+  ];
+
+  const UPGRADE_CONFIGS_WHEEL = [
+    null,
+    { icon:'🌟', title:'GOLDEN WHEEL UNLOCKED!',
+      subtitle:"You've earned access to the exclusive Golden Wheel!<br>Bigger prizes. Golden Tickets. Insane rewards!",
+      btnText:'SPIN THE GOLDEN WHEEL! 🌟',
+      boxBg:'linear-gradient(145deg, #2a1400, #1a0c00)', border:'#ffe066', glow:'#ffd700aa',
+      titleColor:'#ffe066', subColor:'#fff5cc',
+      btnBg:'linear-gradient(135deg, #ffe066, #ff9900)', btnColor:'#000' },
+    { icon:'💎', title:'DIAMOND WHEEL UNLOCKED!',
+      subtitle:'The rarest wheel of all — the Diamond Wheel!<br>Cars, Bitcoin, and prizes beyond imagination!',
+      btnText:'SPIN THE DIAMOND WHEEL! 💎',
+      boxBg:'linear-gradient(145deg, #001828, #000d18)', border:'#00ccff', glow:'#00ccffaa',
+      titleColor:'#aaddff', subColor:'#ccf0ff',
+      btnBg:'linear-gradient(135deg, #00ccff, #0066ff)', btnColor:'#fff' },
+  ];
+
+  // ─────────────────────────────────────────
+  // TIER CONFIGS — SLOT
+  // ─────────────────────────────────────────
+  const TIERS_SLOT = [
+    {
+      id: 'base', name: '🎰 SLOT MACHINE 🎰',
+      marquee: '✦ INSERT TICKET TO PLAY ✦',
+      ticketLabel: '🎟️ YOUR TICKETS', ticketIcon: '🎟️',
+      bg: 'radial-gradient(ellipse at center, #1a0a2e 0%, #0d0618 60%, #000 100%)',
+      titleColor: '#ffd700', panelBorder: '#ffd700', panelGlow: '#ffd700aa',
+      bulbColors: ['#ff0044','#ffd700','#00ffcc','#ff6600','#aa00ff','#00aaff'],
+      cabinetBg: 'linear-gradient(180deg, #3a1a00 0%, #1a0a00 100%)',
+      cabinetBorder: '#ffd700', reelBg: '#050010',
+      prizes: TIER_PRIZES[0].prizes,
+      weights: TIER_PRIZES[0].weights,
+    },
+    {
+      id: 'gold', name: '🌟 GOLDEN SLOTS 🌟',
+      marquee: '✦ GOLDEN SLOTS — BIGGER PRIZES ✦',
+      ticketLabel: '🌟 GOLDEN TICKETS', ticketIcon: '🌟',
+      bg: 'radial-gradient(ellipse at center, #2a1800 0%, #1a0e00 60%, #000 100%)',
+      titleColor: '#ffe066', panelBorder: '#ffe066', panelGlow: '#ffe066aa',
+      bulbColors: ['#ffd700','#ffaa00','#ffe066','#ff8800','#ffcc44','#ffdd88'],
+      cabinetBg: 'linear-gradient(180deg, #4a2800 0%, #2a1400 100%)',
+      cabinetBorder: '#ffe066', reelBg: '#0d0800',
+      prizes: TIER_PRIZES[1].prizes,
+      weights: TIER_PRIZES[1].weights,
+    },
+    {
+      id: 'diamond', name: '💎 DIAMOND SLOTS 💎',
+      marquee: '✦ DIAMOND SLOTS — LEGENDARY PRIZES ✦',
+      ticketLabel: '💎 DIAMOND TICKETS', ticketIcon: '💎',
+      bg: 'radial-gradient(ellipse at center, #001828 0%, #000d18 60%, #000 100%)',
+      titleColor: '#aaddff', panelBorder: '#00ccff', panelGlow: '#00ccffaa',
+      bulbColors: ['#00ccff','#0088ff','#aaddff','#0044cc','#66bbff','#88ddff'],
+      cabinetBg: 'linear-gradient(180deg, #002040 0%, #000d20 100%)',
+      cabinetBorder: '#00ccff', reelBg: '#00060e',
+      prizes: TIER_PRIZES[2].prizes,
+      weights: TIER_PRIZES[2].weights,
+    },
+  ];
+
+  const UPGRADE_CONFIGS_SLOT = [
+    null,
+    { icon:'🌟', title:'GOLDEN SLOTS UNLOCKED!',
+      subtitle:"You've earned access to the exclusive Golden Slots!<br>Bigger prizes. Golden Tickets. Insane rewards!",
+      btnText:'SPIN THE GOLDEN SLOTS! 🌟',
+      boxBg:'linear-gradient(145deg, #2a1400, #1a0c00)', border:'#ffe066', glow:'#ffd700aa',
+      titleColor:'#ffe066', subColor:'#fff5cc',
+      btnBg:'linear-gradient(135deg, #ffe066, #ff9900)', btnColor:'#000' },
+    { icon:'💎', title:'DIAMOND SLOTS UNLOCKED!',
+      subtitle:'The rarest slots of all — the Diamond Slots!<br>Cars, Bitcoin, and prizes beyond imagination!',
+      btnText:'SPIN THE DIAMOND SLOTS! 💎',
+      boxBg:'linear-gradient(145deg, #001828, #000d18)', border:'#00ccff', glow:'#00ccffaa',
+      titleColor:'#aaddff', subColor:'#ccf0ff',
+      btnBg:'linear-gradient(135deg, #00ccff, #0066ff)', btnColor:'#fff' },
+  ];
+
+  // ─────────────────────────────────────────
+  // TIER CONFIGS — SCRATCH
+  // ─────────────────────────────────────────
+  const TIERS_SCRATCH = [
+    {
+      id: 'base', name: '🃏 SCRATCH CARD 🃏',
+      headerText: '✦ SCRATCH TO WIN ✦',
+      ticketLabel: '🎟️ YOUR TICKETS', ticketIcon: '🎟️',
+      bg: 'radial-gradient(ellipse at center, #1a0a2e 0%, #0d0618 60%, #000 100%)',
+      titleColor: '#ffd700', panelBorder: '#ffd700', panelGlow: '#ffd700aa',
+      bulbColors: ['#ff0044','#ffd700','#00ffcc','#ff6600','#aa00ff','#00aaff'],
+      cardBg: 'linear-gradient(180deg, #3a1a00 0%, #1a0a00 100%)',
+      cardBorder: '#ffd700', foilColor: '#8b6914', foilHighlight: '#d4a820', cellBg: '#0a001e',
+      prizes: TIER_PRIZES[0].prizes,
+      weights: TIER_PRIZES[0].weights,
+    },
+    {
+      id: 'gold', name: '🌟 GOLDEN CARDS 🌟',
+      headerText: '✦ GOLDEN SCRATCH CARDS ✦',
+      ticketLabel: '🌟 GOLDEN TICKETS', ticketIcon: '🌟',
+      bg: 'radial-gradient(ellipse at center, #2a1800 0%, #1a0e00 60%, #000 100%)',
+      titleColor: '#ffe066', panelBorder: '#ffe066', panelGlow: '#ffe066aa',
+      bulbColors: ['#ffd700','#ffaa00','#ffe066','#ff8800','#ffcc44','#ffdd88'],
+      cardBg: 'linear-gradient(180deg, #4a2800 0%, #2a1400 100%)',
+      cardBorder: '#ffe066', foilColor: '#b8860b', foilHighlight: '#ffd700', cellBg: '#0d0800',
+      prizes: TIER_PRIZES[1].prizes,
+      weights: TIER_PRIZES[1].weights,
+    },
+    {
+      id: 'diamond', name: '💎 DIAMOND CARDS 💎',
+      headerText: '✦ DIAMOND SCRATCH CARDS ✦',
+      ticketLabel: '💎 DIAMOND TICKETS', ticketIcon: '💎',
+      bg: 'radial-gradient(ellipse at center, #001828 0%, #000d18 60%, #000 100%)',
+      titleColor: '#aaddff', panelBorder: '#00ccff', panelGlow: '#00ccffaa',
+      bulbColors: ['#00ccff','#0088ff','#aaddff','#0044cc','#66bbff','#88ddff'],
+      cardBg: 'linear-gradient(180deg, #002040 0%, #000d20 100%)',
+      cardBorder: '#00ccff', foilColor: '#005588', foilHighlight: '#00ccff', cellBg: '#00060e',
+      prizes: TIER_PRIZES[2].prizes,
+      weights: TIER_PRIZES[2].weights,
+    },
+  ];
+
+  const UPGRADE_CONFIGS_SCRATCH = [
+    null,
+    { icon:'🌟', title:'GOLDEN CARDS UNLOCKED!',
+      subtitle:"You've earned the exclusive Golden Scratch Cards!<br>Bigger prizes. Golden Tickets. Insane rewards!",
+      btnText:'SCRATCH GOLDEN CARDS! 🌟',
+      boxBg:'linear-gradient(145deg, #2a1400, #1a0c00)', border:'#ffe066', glow:'#ffd700aa',
+      titleColor:'#ffe066', subColor:'#fff5cc',
+      btnBg:'linear-gradient(135deg, #ffe066, #ff9900)', btnColor:'#000' },
+    { icon:'💎', title:'DIAMOND CARDS UNLOCKED!',
+      subtitle:'The rarest cards of all — Diamond Scratch Cards!<br>Cars, Bitcoin, prizes beyond imagination!',
+      btnText:'SCRATCH DIAMOND CARDS! 💎',
+      boxBg:'linear-gradient(145deg, #001828, #000d18)', border:'#00ccff', glow:'#00ccffaa',
+      titleColor:'#aaddff', subColor:'#ccf0ff',
+      btnBg:'linear-gradient(135deg, #00ccff, #0066ff)', btnColor:'#fff' },
+  ];
+
+  // ─────────────────────────────────────────
+  // ACTIVE GAME POINTERS
+  // ─────────────────────────────────────────
+  const TIERS          = ACTIVE_GAME === 'wheel' ? TIERS_WHEEL          : ACTIVE_GAME === 'slot' ? TIERS_SLOT          : TIERS_SCRATCH;
+  const UPGRADE_CONFIGS = ACTIVE_GAME === 'wheel' ? UPGRADE_CONFIGS_WHEEL : ACTIVE_GAME === 'slot' ? UPGRADE_CONFIGS_SLOT : UPGRADE_CONFIGS_SCRATCH;
+
+  // ─────────────────────────────────────────
+  // STATE
+  // ─────────────────────────────────────────
+  let currentTierIndex = 0;
+  let tickets          = ACTIVE_GAME === 'scratch' ? 3 : ACTIVE_GAME === 'slot' ? 10 : 5;
+  let adActive         = false;
+  let skipUnlocked     = false;
+  let skipCooldown     = 300;
+  let skipTimer        = null;
+  let pendingPrize     = null;
+  let wonPrizes        = {};
+  let wonJackpots      = {};
+  let winCount         = 0;
+  let skipGuaranteeSpin = Math.floor(Math.random() * 5);
+  let _diamondNoJackpotRounds = 0;
+
+  // Drain-mode state
+  let _drainMode      = false; // timer ran out + player clicked skip: ticket prizes off, draining to 0
+  let _bonusRound     = false; // player chose "3 more tickets": ticket prizes back, infinite refill, skip shows confirm
+  let _safetyNetFired = false; // 10-min safety net fired: skip always shows confirm regardless of state
+
+  // Wheel + slot shared
+  let spinning   = false;
+  let spinCount  = 0;
+
+  // Slot-only
+  let lastWasNearMiss = false;
+
+  // Scratch-only
+  let scratchCount  = 0;
+  let cardCount_total = 0;
+  let gridPrizes    = [];
+  let revealedCells = new Array(9).fill(false);
+  let winLine       = null;
+  let cardDone      = false;
+  let scratching    = false;
+  let scratchCtxs   = [];
+  let cardInteractive = false;
+
+  const WIN_LINES = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6],
+  ];
+
+  function currentTier() { return TIERS[currentTierIndex]; }
+
+  // Diamond guarantee: if 9 consecutive diamond rounds had no jackpot,
+  // force an unwon jackpot on round 10 (if any remain).
+  function maybeForceDiamondJackpot(prizes) {
+    if (currentTier().id !== 'diamond') return -1;
+    const availableJackpots = prizes
+      .map((prize, index) => ({ prize, index }))
+      .filter(({ prize }) => prize.isJackpot && !wonJackpots[prize.id]);
+    if (availableJackpots.length === 0) {
+      _diamondNoJackpotRounds = 0;
+      return -1;
+    }
+    if (_diamondNoJackpotRounds < 9) return -1;
+    const pick = availableJackpots[Math.floor(Math.random() * availableJackpots.length)];
+    return pick.index;
+  }
+
+  function trackDiamondRoundPlayed(prizes, prizeIndex) {
+    if (currentTier().id !== 'diamond') return;
+    const hasRemainingJackpots = prizes.some(prize => prize.isJackpot && !wonJackpots[prize.id]);
+    if (!hasRemainingJackpots) {
+      _diamondNoJackpotRounds = 0;
+      return;
+    }
+    const landedJackpot = prizeIndex !== -1 && prizes[prizeIndex] && prizes[prizeIndex].isJackpot;
+    _diamondNoJackpotRounds = landedJackpot ? 0 : (_diamondNoJackpotRounds + 1);
+  }
+
+  // Image cache — preload prize PNGs
+  const imgCache = {};
+  (function preloadImages() {
+    TIERS.forEach(function(tier) {
+      tier.prizes.forEach(function(p) {
+        if (p.imgIcon && !imgCache[p.imgIcon]) {
+          const img = new Image();
+          img.src = p.imgIcon;
+          imgCache[p.imgIcon] = img;
+        }
+      });
+    });
+  })();
+
+  // ─────────────────────────────────────────
+  // AUDIO
+  // ─────────────────────────────────────────
+  let _ac = null, _masterGain = null, _acProxy = null;
+  function getAC() {
+    if (!_ac) {
+      _ac = new (window.AudioContext || window.webkitAudioContext)();
+      _masterGain = _ac.createGain();
+      _masterGain.gain.value = 0.5;
+      _masterGain.connect(_ac.destination);
+      _acProxy = new Proxy(_ac, {
+        get(target, prop) {
+          if (prop === 'destination') return _masterGain;
+          const val = target[prop];
+          return typeof val === 'function' ? val.bind(target) : val;
+        }
+      });
+    }
+    if (_ac.state === 'suspended') _ac.resume();
+    return _acProxy;
+  }
+
+  const _assetAudio = {
+    alert:   new Audio('assets/alert.mp3'),
+    dogBark: new Audio('assets/doot_bark.mp3'),
+    dogKiss: new Audio('assets/doot_kiss.mp3'),
+    awpShot: new Audio('assets/awp_shot.mp3'),
+    waka:    new Audio('assets/waka.mp3'),
+  };
+  Object.values(_assetAudio).forEach(function(audio) {
+    audio.preload = 'auto';
+  });
+  _assetAudio.waka.loop = true;
+  _assetAudio.waka.playbackRate = 1.5;
+
+  function playAssetSound(key) {
+    const source = _assetAudio[key];
+    if (!source) return;
+    try {
+      const volSlider = document.getElementById('vol-slider');
+      const audio = source.cloneNode();
+      audio.volume = Math.max(0, Math.min(1, parseFloat(volSlider ? volSlider.value : '0.5') || 0));
+      audio.play().catch(function() {});
+    } catch (e) {}
+  }
+
+  function getEffectivePrizeWeights(weights, prizes) {
+    return weights.map(function(weight, index) {
+      const prize = prizes[index];
+      if (prize.isJackpot && wonJackpots[prize.id]) return 0;
+      // Drain mode only: ticket prizes impossible. Bonus round and safety net re-enable them.
+      if (_drainMode && !_bonusRound && prize.ticketBonus > 0) return 0;
+      return weight;
+    });
+  }
+
+  document.getElementById('winner-dot').addEventListener('click', function() {
+    if (adActive) adjustSkipCooldown(-100, true);
+  });
+
+  document.getElementById('vol-slider').addEventListener('input', function() {
+    if (_masterGain) _masterGain.gain.value = parseFloat(this.value);
+  });
+
+  document.getElementById('vol-speaker').addEventListener('click', function() {
+    if (adActive) adjustSkipCooldown(100, true);
+  });
+
+  function _playWheelSpinStart() {
+    const ac = getAC(), t = ac.currentTime;
+    const osc = ac.createOscillator(), g = ac.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(320, t); osc.frequency.exponentialRampToValueAtTime(55, t + 0.12);
+    g.gain.setValueAtTime(0.55, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+    osc.connect(g); g.connect(ac.destination); osc.start(t); osc.stop(t + 0.18);
+    const bufLen = Math.floor(_ac.sampleRate * 0.25);
+    const buf = _ac.createBuffer(1, bufLen, _ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) d[i] = Math.random() * 2 - 1;
+    const src = _ac.createBufferSource(); src.buffer = buf;
+    const flt = _ac.createBiquadFilter(); flt.type = 'highpass';
+    flt.frequency.setValueAtTime(1200, t); flt.frequency.exponentialRampToValueAtTime(300, t + 0.25);
+    const wg = _ac.createGain(); wg.gain.setValueAtTime(0.28, t); wg.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+    src.connect(flt); flt.connect(wg); wg.connect(ac.destination); src.start(t);
+  }
+
+  function _playSlotSpinStart() {
+    const ac = getAC(), t = ac.currentTime;
+    const osc = ac.createOscillator(), g = ac.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(400, t); osc.frequency.exponentialRampToValueAtTime(60, t + 0.14);
+    g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.connect(g); g.connect(ac.destination); osc.start(t); osc.stop(t + 0.2);
+    const bufLen = Math.floor(_ac.sampleRate * 0.3);
+    const buf = _ac.createBuffer(1, bufLen, _ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) d[i] = Math.random() * 2 - 1;
+    const src = _ac.createBufferSource(); src.buffer = buf;
+    const flt = _ac.createBiquadFilter(); flt.type = 'bandpass'; flt.frequency.value = 1200; flt.Q.value = 0.8;
+    const wg = _ac.createGain(); wg.gain.setValueAtTime(0.2, t); wg.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    src.connect(flt); flt.connect(wg); wg.connect(ac.destination); src.start(t);
+  }
+
+  function playSpinStart() {
+    if (ACTIVE_GAME === 'wheel')     _playWheelSpinStart();
+    else if (ACTIVE_GAME === 'slot') _playSlotSpinStart();
+  }
+
+  function playKaChing() {
+    const ac = getAC(), t = ac.currentTime;
+    [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+      const osc = ac.createOscillator(), g = ac.createGain();
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const w = t + i * 0.09;
+      g.gain.setValueAtTime(0, w); g.gain.linearRampToValueAtTime(0.38, w + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, w + 0.45);
+      osc.connect(g); g.connect(ac.destination); osc.start(w); osc.stop(w + 0.5);
+    });
+    const len = Math.floor(_ac.sampleRate * 0.08);
+    const buf = _ac.createBuffer(1, len, _ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.25));
+    const src = _ac.createBufferSource(); src.buffer = buf;
+    const flt = _ac.createBiquadFilter(); flt.type = 'highpass'; flt.frequency.value = 5500;
+    const ng = _ac.createGain(); ng.gain.value = 0.35;
+    src.connect(flt); flt.connect(ng); ng.connect(ac.destination); src.start(t + 0.27);
+  }
+
+  function playJackpot() {
+    const ac = getAC(), t = ac.currentTime;
+    [261.63,329.63,392,523.25,659.25,783.99,1046.5,1318.51].forEach((freq, i) => {
+      const osc = ac.createOscillator(), g = ac.createGain();
+      osc.type = 'square'; osc.frequency.value = freq;
+      const w = t + i * 0.065;
+      g.gain.setValueAtTime(0, w); g.gain.linearRampToValueAtTime(0.22, w + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, w + 0.55);
+      osc.connect(g); g.connect(ac.destination); osc.start(w); osc.stop(w + 0.6);
+    });
+  }
+
+  function playDenied() {
+    const ac = getAC(), t = ac.currentTime;
+    [392, 311.13, 261.63].forEach((freq, i) => {
+      const osc = ac.createOscillator(), g = ac.createGain();
+      osc.type = 'sawtooth';
+      const w = t + i * 0.19;
+      osc.frequency.setValueAtTime(freq, w); osc.frequency.exponentialRampToValueAtTime(freq * 0.82, w + 0.18);
+      g.gain.setValueAtTime(0, w); g.gain.linearRampToValueAtTime(0.3, w + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, w + 0.18);
+      osc.connect(g); g.connect(ac.destination); osc.start(w); osc.stop(w + 0.22);
+    });
+  }
+
+  function playTierUpgrade() {
+    const ac = getAC(), t = ac.currentTime;
+    [261.63,329.63,392,523.25,659.25,783.99,1046.5,1318.51,1567.98,2093].forEach((freq, i) => {
+      const osc = ac.createOscillator(), g = ac.createGain();
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const w = t + i * 0.09;
+      g.gain.setValueAtTime(0, w); g.gain.linearRampToValueAtTime(0.3, w + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, w + 0.7);
+      osc.connect(g); g.connect(ac.destination); osc.start(w); osc.stop(w + 0.75);
+    });
+    const osc2 = ac.createOscillator(), g2 = ac.createGain();
+    osc2.type = 'sawtooth';
+    osc2.frequency.setValueAtTime(55, t); osc2.frequency.exponentialRampToValueAtTime(110, t + 1.2);
+    g2.gain.setValueAtTime(0.2, t); g2.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+    osc2.connect(g2); g2.connect(ac.destination); osc2.start(t); osc2.stop(t + 1.5);
+  }
+
+  // ─────────────────────────────────────────
+  // ELEMENT REFS + ACTION BUTTON
+  // ─────────────────────────────────────────
+  const spinBtnEl    = ACTIVE_GAME === 'slot'  ? document.querySelector('#game-slot #spin-btn')
+                     : ACTIVE_GAME === 'wheel' ? document.querySelector('#game-wheel #spin-btn')
+                     : null;
+  const newCardBtnEl = ACTIVE_GAME === 'scratch' ? document.getElementById('new-card-btn') : null;
+  const ticketCountEl = document.getElementById('ticket-count');
+
+  function updateActionBtn() {
+    if (ACTIVE_GAME === 'scratch') updateNewCardBtn();
+    else updateSpinBtn();
+  }
+
+  function setTickets(n) {
+    tickets = n;
+    ticketCountEl.textContent = n;
+    ticketCountEl.classList.remove('bump');
+    void ticketCountEl.offsetWidth;
+    ticketCountEl.classList.add('bump');
+    setTimeout(() => ticketCountEl.classList.remove('bump'), 200);
+    updateActionBtn();
+    if (_drainMode) updateSkipTimer(); // keep "X remaining" in sync
+  }
+
+  // ─────────────────────────────────────────
+  // PRIZE LIST
+  // ─────────────────────────────────────────
+  const prizesList  = document.getElementById('prizes-list');
+  const prizesEmpty = document.getElementById('prizes-empty');
+
+  function addToPrizeList(prize) {
+    if (prizesEmpty && prizesEmpty.parentNode) prizesEmpty.remove();
+    if (wonPrizes[prize.id]) {
+      wonPrizes[prize.id].count++;
+      const li = document.getElementById('prize-li-' + prize.id);
+      if (li) { const c = li.querySelector('.prize-count'); if (c) c.textContent = wonPrizes[prize.id].count + 'x'; }
+    } else {
+      wonPrizes[prize.id] = { prize, count: 1 };
+      const li = document.createElement('li');
+      li.id = 'prize-li-' + prize.id;
+      li.innerHTML = `<span>${prize.icon} ${prize.label}</span><span class="prize-count">1x</span>`;
+      prizesList.appendChild(li);
+    }
+  }
+
+  // ─────────────────────────────────────────
+  // COLLECT PRIZES BUTTON
+  // ─────────────────────────────────────────
+  const collectPrizesBtn = document.getElementById('collect-prizes-btn');
+  const collectWarnPopup = document.getElementById('collect-warn-popup');
+  const collectWarnOk    = document.getElementById('collect-warn-ok');
+
+  const collectEncouragements = [
+    { emoji:'🤩', heading:"YOU'RE SO CLOSE TO WINNING MORE!", msg:"You still have <strong>{n}</strong> tickets! That's basically FREE MONEY. Use them all first!" },
+    { emoji:'🔥', heading:"YOU'RE ON A HOT STREAK!", msg:"Don't quit now with <strong>{n}</strong> tickets left. The next play could be the big one!" },
+    { emoji:'🏆', heading:"CHAMPIONS DON'T LEAVE EARLY!", msg:"<strong>{n}</strong> unspent tickets? Our winners always play until the last one!" },
+    { emoji:'💰', heading:"FREE TICKETS = FREE PRIZES!", msg:"You have <strong>{n}</strong> FREE plays sitting there! It would be a CRIME to leave." },
+    {
+      emoji:   ACTIVE_GAME === 'slot' ? '🎰' : ACTIVE_GAME === 'scratch' ? '🃏' : '🎡',
+      heading: ACTIVE_GAME === 'slot' ? "THE SLOTS ARE CALLING YOUR NAME!" : ACTIVE_GAME === 'scratch' ? "THE CARDS ARE CALLING YOUR NAME!" : "THE WHEEL IS CALLING YOUR NAME!",
+      msg:    "The game whispered to us — <strong>{n}</strong> more plays and something INCREDIBLE happens!",
+    },
+  ];
+  let collectMsgIndex = 0;
+
+  collectPrizesBtn.addEventListener('click', () => {
+    if (tickets <= 0 && pendingPrize) {
+      playDenied();
+      document.querySelector('#collect-warn-box .cw-emoji').textContent   = '⚠️';
+      document.getElementById('collect-warn-heading').textContent          = "YOU HAVEN'T PICKED UP YOUR LAST PRIZE YET!";
+      document.getElementById('collect-warn-msg').innerHTML                = 'Pick up all the prizes and use all the tickets before claiming your rewards.';
+      collectWarnPopup.classList.add('show');
+      return;
+    }
+    if (tickets > 0) {
+      playDenied();
+      const pick = collectEncouragements[collectMsgIndex % collectEncouragements.length];
+      collectMsgIndex++;
+      document.querySelector('#collect-warn-box .cw-emoji').textContent   = pick.emoji;
+      document.getElementById('collect-warn-heading').textContent          = pick.heading;
+      document.getElementById('collect-warn-msg').innerHTML                = pick.msg.replace('{n}', tickets);
+      collectWarnPopup.classList.add('show');
+    }
+  });
+  collectWarnOk.addEventListener('click', () => collectWarnPopup.classList.remove('show'));
+
+  // ─────────────────────────────────────────
+  // SKIP BUTTON + TIMER
+  // ─────────────────────────────────────────
+  const skipBtn       = document.getElementById('skip');
+  const skipTimerEl   = document.getElementById('skip-timer');
+  const skipWarnPopup = document.getElementById('skip-warn-popup');
+  const skipWarnOk    = document.getElementById('skip-warn-ok');
+
+  // Called whenever the skip countdown reaches 0 (for any reason).
+  // First phase: skip looks available. If user tries to skip with tickets left,
+  // we then switch into drain mode (greyed with ticket count).
+  function unlockSkip() {
+    clearInterval(skipTimer); skipTimer = null;
+    skipUnlocked = true;
+    _drainMode = false;
+    skipBtn.classList.add('ready');
+    updateSkipTimer();
+  }
+
+  function startSkipCooldown() {
+    skipCooldown = 360; skipUnlocked = false; _drainMode = false;
+    skipBtn.classList.remove('ready');
+    updateSkipTimer();
+    skipTimer = setInterval(() => {
+      skipCooldown--;
+      updateSkipTimer();
+      if (skipCooldown <= 0) unlockSkip();
+    }, 1000);
+  }
+
+  function adjustSkipCooldown(delta, silent) {
+    if (!adActive) return;
+    if (_drainMode) return; // skip is already unlocked in drain mode — no more timer changes
+    skipCooldown = Math.max(0, skipCooldown + delta);
+    if (skipCooldown <= 0) {
+      unlockSkip();
+    } else {
+      if (skipUnlocked) {
+        skipUnlocked = false; skipBtn.classList.remove('ready');
+        skipTimer = setInterval(() => {
+          skipCooldown--; updateSkipTimer();
+          if (skipCooldown <= 0) unlockSkip();
+        }, 1000);
+      }
+      updateSkipTimer();
+    }
+    if (!silent) {
+      const flash = document.createElement('div');
+      const flashColor = delta > 0 ? '#ff8888' : '#00ffaa';
+      flash.style.cssText = `position:absolute;bottom:100%;right:0;color:${flashColor};font-size:13px;font-family:Bungee,sans-serif;white-space:nowrap;pointer-events:none;animation:skip-flash 1.2s ease forwards;`;
+      flash.textContent = delta <= -99999 ? '⚡ SKIP READY!' : (delta > 0 ? `⚠️ +${delta}s` : `⏩ ${-delta}s`);
+      skipBtn.appendChild(flash);
+      setTimeout(() => flash.remove(), 1300);
+    }
+  }
+
+  function updateSkipTimer() {
+    if (_safetyNetFired || _bonusRound) {
+      // Safety net or bonus round: always gold, always functional
+      skipBtn.classList.add('ready');
+      skipTimerEl.textContent = '';
+    } else if (_drainMode) {
+      // Drain state: grey, shows remaining ticket count
+      skipBtn.classList.remove('ready');
+      skipTimerEl.textContent = `${tickets} 🎟️ remaining`;
+    } else if (skipUnlocked) {
+      // Timer ran out but not yet in drain (first click pending): gold
+      skipBtn.classList.add('ready');
+      skipTimerEl.textContent = '';
+    } else {
+      // Still counting down
+      skipBtn.classList.remove('ready');
+      skipTimerEl.textContent = `Available in ${skipCooldown}s`;
+    }
+  }
+
+  function pauseMinigame() {
+    if (skipTimer) { clearInterval(skipTimer); skipTimer = null; }
+  }
+
+  function resumeMinigame() {
+    if (skipCooldown > 0 && !skipTimer && !skipUnlocked) {
+      skipTimer = setInterval(() => {
+        skipCooldown--; updateSkipTimer();
+        if (skipCooldown <= 0) unlockSkip();
+      }, 1000);
+    }
+  }
+
+  const losePrizesPopup  = document.getElementById('lose-prizes-popup');
+  const lpCancelBtn      = document.getElementById('lp-cancel-btn');
+  const lpConfirmBtn     = document.getElementById('lp-confirm-btn');
+
+  // Show lose-prizes confirm; cancelTarget is the popup to re-show on Cancel (or null)
+  function showLosePrizesConfirm(cancelTarget) {
+    if (cancelTarget) cancelTarget.classList.remove('show');
+    losePrizesPopup.classList.add('show');
+    lpCancelBtn.onclick = () => {
+      losePrizesPopup.classList.remove('show');
+      if (cancelTarget) cancelTarget.classList.add('show');
+    };
+  }
+
+  lpConfirmBtn.addEventListener('click', () => {
+    losePrizesPopup.classList.remove('show');
+    window.top.postMessage({ type: 'success' }, '*');
+  });
+
+  skipBtn.addEventListener('click', () => {
+    // Safety net overrides everything: show confirm
+    if (_safetyNetFired) { showLosePrizesConfirm(null); return; }
+    // Bonus round: skip is functional, show confirm
+    if (_bonusRound) { showLosePrizesConfirm(null); return; }
+    // Still locked by countdown
+    if (!skipUnlocked) { playDenied(); return; }
+    // Timer ran out — first click enters drain mode + shows warning
+    if (tickets > 0) {
+      playDenied();
+      if (!_drainMode) {
+        _drainMode = true;
+        updateSkipTimer();
+      }
+      skipWarnPopup.classList.add('show');
+    } else {
+      // No tickets left in drain mode (oot popup should be showing, fallback)
+      window.top.postMessage({ type: 'success' }, '*');
+    }
+  });
+  skipWarnOk.addEventListener('click', () => skipWarnPopup.classList.remove('show'));
+
+  // Shared game-start function.
+  // - fromIntro = false: ad lifecycle phase, only reveal intro popup
+  // - fromIntro = true: player clicked Let's Play, start actual game loop/timers
+  function startGame(fromIntro = false) {
+    const introPopup = document.getElementById('intro-popup');
+    if (!fromIntro) {
+      introPopup.classList.remove('hidden');
+      return;
+    }
+
+    if (adActive) return;
+    introPopup.classList.add('hidden');
+    adActive = true;
+    skipBtn.style.display = 'block';
+    updateActionBtn();
+    startSkipCooldown();
+    startIdleDetection();
+    startWinnerTicker();
+
+    // 10-minute safety net: unconditionally unlock skip after 10 minutes
+    const _safetyNetEl = IS_DEBUG ? document.getElementById('dbg-safety-net') : null;
+    const _safetyNetEnd = Date.now() + 10 * 60 * 1000;
+    const _safetyNetTick = setInterval(() => {
+      const remaining = Math.max(0, _safetyNetEnd - Date.now());
+      const m = Math.floor(remaining / 60000);
+      const s = Math.floor((remaining % 60000) / 1000);
+      if (_safetyNetEl) _safetyNetEl.textContent = `⏱ Safety net: ${m}:${String(s).padStart(2, '0')}`;
+      if (remaining <= 0) clearInterval(_safetyNetTick);
+    }, 1000);
+    setTimeout(() => {
+      if (!_safetyNetFired) {
+        _safetyNetFired = true;
+        skipUnlocked = true;
+        // Don't touch _drainMode or _bonusRound — safety net just overrides click behaviour
+        if (skipTimer) { clearInterval(skipTimer); skipTimer = null; }
+        updateSkipTimer();
+        if (_safetyNetEl) _safetyNetEl.textContent = '⏱ Safety net: FIRED ✅';
+      }
+    }, 10 * 60 * 1000);
+  }
+
+  // Intro start button
+  document.getElementById('intro-start-btn').addEventListener('click', function() {
+    startGame(true);
+  });
+
+  // Out-of-tickets popup buttons
+  const ootPopup = document.getElementById('out-of-tickets-popup');
+  document.getElementById('oot-skip-btn').addEventListener('click', () => {
+    // Show lose-prizes confirm; cancel returns to oot popup
+    showLosePrizesConfirm(ootPopup);
+  });
+  document.getElementById('oot-more-btn').addEventListener('click', () => {
+    ootPopup.classList.remove('show');
+    _bonusRound  = true;
+    _drainMode   = false;         // ticket prizes re-enabled
+    skipUnlocked = true;          // skip button stays available
+    if (skipTimer) { clearInterval(skipTimer); skipTimer = null; }
+    updateSkipTimer();
+    setTickets(3);
+  });
+
+  // ─────────────────────────────────────────
+  // CONFETTI
+  // ─────────────────────────────────────────
+  const confCanvas = document.getElementById('confetti-canvas');
+  const confCtx    = confCanvas.getContext('2d');
+  let confParticles = [];
+  let confAnimating = false;
+
+  function fireConfetti(count) {
+    const colors = ['#ffd700','#ff4400','#00ffcc','#ff00ff','#00aaff','#ffffff','#ff6666'];
+    for (let i = 0; i < count; i++) {
+      confParticles.push({
+        x: Math.random() * 960, y: Math.random() * 540,
+        vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 8,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: Math.random() * 8 + 4, rot: Math.random() * Math.PI * 2,
+        rotV: (Math.random() - 0.5) * 0.3, life: 1,
+      });
+    }
+    if (confParticles.length > 0 && !confAnimating) animateConf();
+  }
+
+  function animateConf() {
+    confAnimating = true;
+    confCtx.clearRect(0, 0, 960, 540);
+    confParticles = confParticles.filter(p => p.life > 0);
+    for (const p of confParticles) {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.18;
+      p.rot += p.rotV; p.life -= 0.012;
+      confCtx.save();
+      confCtx.globalAlpha = Math.max(0, p.life);
+      confCtx.translate(p.x, p.y); confCtx.rotate(p.rot);
+      confCtx.fillStyle = p.color;
+      confCtx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+      confCtx.restore();
+    }
+    if (confParticles.length > 0) requestAnimationFrame(animateConf);
+    else { confAnimating = false; confCtx.clearRect(0, 0, 960, 540); }
+  }
+
+  // ─────────────────────────────────────────
+  // BACKGROUND STARS
+  // ─────────────────────────────────────────
+  (function() {
+    const cont = document.getElementById('overlay-container');
+    for (let i = 0; i < 60; i++) {
+      const s = document.createElement('div'); s.className = 'bg-star';
+      const sz = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*960}px;top:${Math.random()*540}px;animation-delay:${Math.random()*2}s;animation-duration:${1.5+Math.random()*2}s;`;
+      cont.appendChild(s);
+    }
+  })();
+
+  // ─────────────────────────────────────────
+  // FAKE WINNERS TICKER
+  // ─────────────────────────────────────────
+  const WINNER_NAMES = ['James','Maria','Tyler','Priya','Chen','Olga','Marcus','Fatima','Liam','Aisha','Derek','Yuki','Bruno','Sasha','Kevin','Amara','Dmitri','Chloe','Hassan','Ingrid','Rico','Nadia','Stefan','Blessing','Owen','Mei','Carlos','Petra','Nathan','Zara','Felipe','Anna','Troy','Hana','Viktor','Layla'];
+  const WINNER_COUNTRIES = ['USA','Canada','UK','Australia','Germany','France','Brazil','Japan','India','Mexico','Spain','Netherlands','Italy','Poland','Sweden','South Africa','Argentina','Philippines','Turkey','UAE'];
+  const WINNER_PRIZES = ['$200 Credits','$100 Gift Card','an iPhone 16','$500 Credits','$1000 Gift Card','a Brand New Bike','$2000 Credits','a Brand New Car','1 Full Bitcoin','$200 Gift Card'];
+  const WINNER_GAMES = ['🎡 Prize Wheel','🎰 Slot Machine','🃏 Scratch Card'];
+  const WINNER_QUOTES = [
+    "I couldn't believe my luck today! 😂",
+    "This is 100% real, I already got my tracking number!",
+    "My hands are literally shaking right now!!",
+    "Been playing for 5 minutes and already won! Incredible!",
+    "Tell your friends, this casino actually pays out!",
+    "Third win this week 🤯 just keep playing!",
+    "I thought it was fake but the prize arrived today!!",
+    "Showing my family — they can't believe it either!",
+    "Best ad I've ever seen lol, also I'm rich now",
+    "Claimed my prize in under 72 hours, super legit!",
+    "The customer support was SO helpful with my claim ❤️",
+    "Already told 6 friends. You're welcome casino 🙏",
+  ];
+
+  const WINNER_PREMADE = [
+    { name:'Kota', country:'Poland', prize:'Dog', game:'🎡 Prize Wheel', quote:"I thought it was just the ad but now I have a new best friend! Can't recommend this enough!" },
+    { name:'Joe', country:'USA', prize:'CrowPro Lifetime', game:'🎰 Slot Machine', quote:"I'll never have to worry about my crows again! CA-CAW!!!" },
+    { name:'Daniel.', country:'USA', prize:'WWWW Gold', game:'🃏 Scratch Card', quote:"I just won the best hacking protection package! Amazing!" },
+    { name:'Edna', country:'UK', prize:'Mobility Scooter', game:'🎰 Slot Machine', quote:"This is all I ever wanted and for FREE!" },
+    { name:'Satoshi', country:'China', prize:'1 Full Bitcoin', game:'🃏 Scratch Card', quote:"How am I? A millionaire now!" },
+  ];
+
+  function playWinnerPing() {
+    try {
+      const ac = getAC(), t = ac.currentTime;
+      const osc = ac.createOscillator(), gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1046, t); osc.frequency.exponentialRampToValueAtTime(1568, t + 0.08);
+      gain.gain.setValueAtTime(0.18, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+      osc.start(t); osc.stop(t + 0.55);
+    } catch(e) {}
+  }
+
+  function showNextWinner() {
+    const msgEl = document.getElementById('winner-msg');
+    let name, country, prize, game, quote;
+    if (Math.random() < 0.2) {
+      const p = WINNER_PREMADE[Math.floor(Math.random() * WINNER_PREMADE.length)];
+      ({ name, country, prize, game, quote } = p);
+    } else {
+      name    = WINNER_NAMES[Math.floor(Math.random() * WINNER_NAMES.length)];
+      country = WINNER_COUNTRIES[Math.floor(Math.random() * WINNER_COUNTRIES.length)];
+      prize   = WINNER_PRIZES[Math.floor(Math.random() * WINNER_PRIZES.length)];
+      game    = WINNER_GAMES[Math.floor(Math.random() * WINNER_GAMES.length)];
+      quote   = WINNER_QUOTES[Math.floor(Math.random() * WINNER_QUOTES.length)];
+    }
+    playWinnerPing();
+    msgEl.classList.remove('visible');
+    setTimeout(() => {
+      msgEl.innerHTML =
+        `<span class="wm-name">${name}</span> from <span class="wm-name">${country}</span> ` +
+        `just won <span class="wm-prize">${prize}</span> ` +
+        `playing <span class="wm-game">${game}</span>` +
+        `<span class="wm-quote">&ldquo;${quote}&rdquo;</span>`;
+      msgEl.classList.add('visible');
+    }, 520);
+  }
+
+  function startWinnerTicker() {
+    setTimeout(function run() {
+      showNextWinner();
+      setTimeout(run, 5000 + Math.random() * 15000);
+    }, 1800 + Math.random() * 3000);
+  }
+
+  // ─────────────────────────────────────────
+  // IDLE SYSTEM
+  // ─────────────────────────────────────────
+  const idlePopup  = document.getElementById('idle-popup');
+  let lastActivity = Date.now();
+  let idleLevel    = 0;
+
+  const IDLE_LEVELS = [
+    { threshold:35, emoji:'👀', title:'STILL THERE?',                  msg:"You're missing out on AMAZING prizes! Play to win!", penalty:0 },
+    { threshold:35, emoji:'🤔', title:'HELLO? ANYONE HOME?',           msg:'Psst — the fastest way to skip this ad is to play the game. Just saying 😊', penalty:30 },
+    { threshold:35, emoji:'🙄', title:'ARE YOU TRYING TO SCAM US?',    msg:'Legitimate viewers play the game. Sitting there doing nothing is SUSPICIOUS. +30 seconds added to your skip timer.', penalty:30 },
+    { threshold:35, emoji:'😠', title:'THIS IS GETTING ANNOYING.',     msg:"Seriously? Are you trying to scam us?! The skip timer doesn't care how long you wait. Only how much you PLAY. +60 seconds.", penalty:60 },
+    { threshold:35, emoji:'🤬', title:'WE SEE YOU. WE ARE WATCHING.',  msg:"You're being very rude. This is a PREMIUM casino experience and you're just sitting there. Very disrespectful. +120 seconds.", penalty:120 },
+    { threshold:35, emoji:'😡', title:'CHEATER. IDLER. DISGRACE.',     msg:"WE WILL BE HERE ALL DAY. Think you can outlast us? We have INFINITE time. +300 seconds. Enjoy.", penalty:300 },
+  ];
+
+  function resetIdle() { lastActivity = Date.now(); }
+
+  function pushIdleCard(level) {
+    const card = document.createElement('div');
+    card.className = 'idle-card';
+    card.innerHTML =
+      `<div class="idle-card-box">` +
+        `<div class="idle-card-emoji">${level.emoji}</div>` +
+        `<div class="idle-card-title">${level.title}</div>` +
+        `<div class="idle-card-msg">${level.msg}</div>` +
+        `<div class="idle-card-penalty">${level.penalty > 0 ? '+' + level.penalty + 's added to skip timer!' : ''}</div>` +
+        `<button class="idle-card-ok">OK, I'M PLAYING!</button>` +
+      `</div>`;
+    card.querySelector('.idle-card-ok').addEventListener('click', () => card.remove());
+    idlePopup.appendChild(card);
+    if (level.penalty > 0) adjustSkipCooldown(level.penalty);
+  }
+
+  function startIdleDetection() {
+    if (spinBtnEl) spinBtnEl.addEventListener('click', resetIdle);
+    if (ACTIVE_GAME === 'scratch') {
+      const grid = document.getElementById('scratch-grid');
+      if (grid) {
+        grid.addEventListener('mousedown', resetIdle);
+        grid.addEventListener('touchstart', resetIdle, { passive: true });
+      }
+    }
+    setInterval(() => {
+      if (!adActive) return;
+      if (document.getElementById('dog-popup').classList.contains('show')    ||
+          document.getElementById('sniper-popup').classList.contains('show') ||
+          document.getElementById('maze-popup').classList.contains('show'))  { lastActivity = Date.now(); return; }
+      const idleSec = (Date.now() - lastActivity) / 1000;
+      const next = IDLE_LEVELS[idleLevel];
+      if (next && idleSec >= next.threshold) {
+        pushIdleCard(next);
+        lastActivity = Date.now();
+        idleLevel = Math.min(idleLevel + 1, IDLE_LEVELS.length - 1);
+      }
+    }, 5000);
+  }
+
+  // ═══════════════════════════════════════
+  // WHEEL FUNCTIONS
+  // ═══════════════════════════════════════
+
+  // Wheel-specific audio ticks
+  function scheduleWheelTicks(totalDelta, spinSecs) {
+    const ac = getAC();
+    const sliceAngle = getSliceAngle();
+    const origin = ac.currentTime + 0.06;
+    const numTicks = Math.floor(totalDelta / sliceAngle);
+    for (let k = 1; k <= numTicks; k++) {
+      const frac = (k * sliceAngle) / totalDelta;
+      if (frac >= 1) break;
+      const relTime = spinSecs * (1 - Math.pow(1 - frac, 1 / 3));
+      const when = origin + relTime;
+      const nextFrac = Math.min(((k + 1) * sliceAngle) / totalDelta, 1);
+      const nextRel  = spinSecs * (1 - Math.pow(1 - nextFrac, 1 / 3));
+      const interval = nextRel - relTime;
+      const vol = Math.max(0.04, Math.min(0.55, 0.045 / interval));
+      _scheduleTick(when, vol);
+    }
+    _scheduleClunk(origin + spinSecs);
+  }
+
+  function _scheduleTick(when, vol) {
+    const ac = getAC();
+    const len = Math.floor(_ac.sampleRate * 0.014);
+    const buf = _ac.createBuffer(1, len, _ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.12));
+    const src = _ac.createBufferSource(); src.buffer = buf;
+    const flt = _ac.createBiquadFilter(); flt.type = 'bandpass'; flt.frequency.value = 2800; flt.Q.value = 1.5;
+    const g = _ac.createGain(); g.gain.value = vol;
+    src.connect(flt); flt.connect(g); g.connect(ac.destination);
+    src.start(when);
+  }
+
+  function _scheduleClunk(when) {
+    const ac = getAC();
+    const osc = ac.createOscillator(), g = ac.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(130, when); osc.frequency.exponentialRampToValueAtTime(38, when + 0.18);
+    g.gain.setValueAtTime(0.45, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.22);
+    osc.connect(g); g.connect(ac.destination);
+    osc.start(when); osc.stop(when + 0.25);
+  }
+
+  // Wheel canvas
+  const wheelCanvas = document.getElementById('wheel-canvas');
+  const wheelCtx    = wheelCanvas ? wheelCanvas.getContext('2d') : null;
+  const CX     = wheelCanvas ? wheelCanvas.width  / 2 : 0;
+  const CY     = wheelCanvas ? wheelCanvas.height / 2 : 0;
+  const RADIUS = CX - 8;
+
+  function getSliceAngle() { return (Math.PI * 2) / currentTier().prizes.length; }
+
+  function drawWheel(angle) {
+    if (!wheelCtx) return;
+    const ctx = wheelCtx;
+    const tier = currentTier(), prizes = tier.prizes;
+    const sliceAngle = getSliceAngle();
+    const glowColor  = tier.panelBorder;
+
+    ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+
+    // Outer glow ring
+    const glow = ctx.createRadialGradient(CX, CY, RADIUS - 6, CX, CY, RADIUS + 4);
+    glow.addColorStop(0, glowColor + '99'); glow.addColorStop(1, glowColor + '00');
+    ctx.beginPath(); ctx.arc(CX, CY, RADIUS + 4, 0, Math.PI * 2);
+    ctx.fillStyle = glow; ctx.fill();
+
+    for (let i = 0; i < prizes.length; i++) {
+      const startA = angle + i * sliceAngle - Math.PI / 2;
+      const endA   = startA + sliceAngle;
+      const p = prizes[i];
+
+      ctx.beginPath(); ctx.moveTo(CX, CY); ctx.arc(CX, CY, RADIUS, startA, endA); ctx.closePath();
+      ctx.fillStyle = p.color; ctx.fill();
+      ctx.strokeStyle = p.customBorder || tier.panelBorder;
+      ctx.lineWidth = (p.isJackpot || p.isUpgrade) ? 3 : 1.5; ctx.stroke();
+
+      if (p.isJackpot || p.isUpgrade) {
+        ctx.save(); ctx.beginPath(); ctx.moveTo(CX, CY); ctx.arc(CX, CY, RADIUS, startA, endA); ctx.closePath();
+        const sc = p.isUpgrade ? tier.upgradeGlowColor : '#ffcc00';
+        const sh = ctx.createRadialGradient(CX, CY, 0, CX, CY, RADIUS);
+        sh.addColorStop(0, sc + '00'); sh.addColorStop(0.6, sc + '00'); sh.addColorStop(1, sc + '55');
+        ctx.fillStyle = sh; ctx.fill(); ctx.restore();
       }
 
-      const skipButton = document.getElementById('skip');
+      ctx.save();
+      const midA = startA + sliceAngle / 2;
+      ctx.translate(CX, CY); ctx.rotate(midA);
+      ctx.translate(RADIUS * 0.62, 0); ctx.rotate(Math.PI / 2);
+      ctx.textAlign = 'center';
+      if (p.imgIcon && imgCache[p.imgIcon] && imgCache[p.imgIcon].complete) {
+        const img = imgCache[p.imgIcon], sz = 22;
+        ctx.drawImage(img, -sz / 2, -sz - 2, sz, sz);
+      } else {
+        ctx.font = '16px sans-serif'; ctx.textBaseline = 'bottom'; ctx.fillText(p.icon, 0, 2);
+      }
+      ctx.fillStyle = p.textColor;
+      ctx.font = `bold ${(p.isJackpot || p.isUpgrade) ? '10' : '9'}px sans-serif`;
+      ctx.textBaseline = 'top';
+      p.label.split(' ').forEach((w, wi) => ctx.fillText(w, 0, 4 + wi * 11));
+      ctx.restore();
+    }
 
-      // Listen for messages from the game shell
-      window.addEventListener('message', (event) => {
-        if (!event.data || !event.data.type) return;
+    // Re-stroke custom-border slices on top
+    for (let i = 0; i < prizes.length; i++) {
+      const p = prizes[i]; if (!p.customBorder) continue;
+      const startA = angle + i * sliceAngle - Math.PI / 2;
+      const endA   = startA + sliceAngle;
+      ctx.beginPath(); ctx.moveTo(CX, CY); ctx.arc(CX, CY, RADIUS, startA, endA); ctx.closePath();
+      ctx.strokeStyle = p.customBorder; ctx.lineWidth = 3; ctx.stroke();
+    }
 
-        if (event.data.type === 'adStarted') {
-          // Show the skip button when the ad starts
-          skipButton.style.display = 'block';
+    // Centre hub
+    ctx.beginPath(); ctx.arc(CX, CY, 38, 0, Math.PI * 2);
+    ctx.fillStyle = '#050010'; ctx.fill();
+    ctx.strokeStyle = tier.panelBorder; ctx.lineWidth = 3; ctx.stroke();
+  }
+
+  // Wheel prize picker (uses baseWeights, cycle on spinCount, never returns -1)
+  function _pickPrizeWheel() {
+    const prizes = currentTier().prizes;
+    const baseWeights = getEffectivePrizeWeights(currentTier().baseWeights, prizes);
+    const ticketPrizeIndices = prizes.reduce((acc, p, i) => { if (p.ticketBonus > 0) acc.push(i); return acc; }, []);
+    const drainActive = _drainMode && !_bonusRound;
+    const upgradeIndex = prizes.findIndex(p => p.isUpgrade);
+    const canForceSkipReduction = !skipUnlocked && skipCooldown > 0;
+    function randomTicketPrize() { return ticketPrizeIndices[Math.floor(Math.random() * ticketPrizeIndices.length)]; }
+
+    if (!drainActive) {
+      if (tickets <= 1)                            return randomTicketPrize();
+      if (tickets === 2 && Math.random() < 0.75)  return randomTicketPrize();
+      if (tickets === 3 && Math.random() < 0.50)  return randomTicketPrize();
+    }
+
+    const forcedDiamondJackpot = maybeForceDiamondJackpot(prizes);
+    if (forcedDiamondJackpot !== -1) return forcedDiamondJackpot;
+
+    const cyclePos = spinCount % 6;
+    if (upgradeIndex !== -1 && cyclePos === 5) {
+      skipGuaranteeSpin = canForceSkipReduction ? Math.floor(Math.random() * 5) : -1;
+      return upgradeIndex;
+    }
+    const skipPrizeIndex = prizes.findIndex(p => p.skipReduction);
+    if (canForceSkipReduction && upgradeIndex !== -1 && skipPrizeIndex !== -1 && cyclePos === skipGuaranteeSpin) return skipPrizeIndex;
+
+    const randomWeights = baseWeights.map((w, i) => prizes[i].skipReduction ? 0 : w);
+    const total = randomWeights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < randomWeights.length; i++) { r -= randomWeights[i]; if (r <= 0) return i; }
+    return 0;
+  }
+
+  // Spin animation
+  function spinToIndex(targetIndex, onDone) {
+    const TAU = Math.PI * 2;
+    const SLICE_ANGLE = getSliceAngle();
+    const targetEndNorm = ((-(targetIndex + 0.5) * SLICE_ANGLE) % TAU + TAU) % TAU;
+    const currentNorm   = ((currentAngle % TAU) + TAU) % TAU;
+    let delta = (targetEndNorm - currentNorm + TAU) % TAU;
+    if (delta < 0.001) delta = TAU;
+    const extraTurns = (5 + Math.floor(Math.random() * 3)) * TAU;
+    const totalDelta  = extraTurns + delta;
+    const spinDuration = 6500;
+    scheduleWheelTicks(totalDelta, spinDuration / 1000);
+    const startAngle = currentAngle;
+    const startTime  = performance.now();
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+    function frame(now) {
+      const t = Math.min((now - startTime) / spinDuration, 1);
+      currentAngle = startAngle + totalDelta * easeOut(t);
+      drawWheel(currentAngle);
+      if (t < 1) requestAnimationFrame(frame);
+      else { currentAngle = startAngle + totalDelta; drawWheel(currentAngle); onDone(); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // updateSpinBtn — shared between wheel and slot
+  function updateSpinBtn() {
+    if (!spinBtnEl) return;
+    spinBtnEl.disabled = spinning || tickets <= 0 || !adActive;
+    const idleLabel = ACTIVE_GAME === 'slot' ? '🎰 SPIN!' : 'SPIN!';
+    spinBtnEl.textContent = tickets <= 0 ? 'NO TICKETS' : (spinning ? '...' : idleLabel);
+  }
+
+  // Wheel doSpin
+  function _doSpinWheel(isFree) {
+    spinning = true;
+    updateSpinBtn();
+    playSpinStart();
+    window.top.postMessage({ type: 'pause' }, '*');
+    spinCount++;
+    const prizeIndex = _pickPrizeWheel();
+    trackDiamondRoundPlayed(currentTier().prizes, prizeIndex);
+    if (!isFree) setTickets(tickets - 1);
+    pendingPrize = currentTier().prizes[prizeIndex];
+    spinToIndex(prizeIndex, () => showWinPopup(pendingPrize));
+  }
+
+  // doSpin — public dispatcher (also used by slot via Task 5)
+  function doSpin(isFree) {
+    if (ACTIVE_GAME === 'wheel') _doSpinWheel(isFree);
+    else if (ACTIVE_GAME === 'slot') _doSpinSlot(isFree);
+  }
+
+  // Wire up wheel spin button
+  if (ACTIVE_GAME === 'wheel' && spinBtnEl) {
+    spinBtnEl.addEventListener('click', () => {
+      if (spinning || tickets <= 0 || !adActive) return;
+      doSpin(false);
+    });
+  }
+
+  // ═══════════════════════════════════════
+  // SLOT FUNCTIONS
+  // ═══════════════════════════════════════
+
+  // Slot-specific audio
+  function playReelStop(when, pitch) {
+    const ac = getAC();
+    const osc = ac.createOscillator(), g = ac.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(pitch, when); osc.frequency.exponentialRampToValueAtTime(pitch * 0.5, when + 0.12);
+    g.gain.setValueAtTime(0.3, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.18);
+    osc.connect(g); g.connect(ac.destination); osc.start(when); osc.stop(when + 0.2);
+  }
+
+  function playNearMiss() {
+    const ac = getAC(), t = ac.currentTime;
+    const osc = ac.createOscillator(), g = ac.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, t); osc.frequency.exponentialRampToValueAtTime(440, t + 0.2);
+    g.gain.setValueAtTime(0.25, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    osc.connect(g); g.connect(ac.destination); osc.start(t); osc.stop(t + 0.25);
+  }
+
+  // Reel constants (must match CSS)
+  const CELL_H       = 88;
+  const VISIBLE_CELLS = 3;
+  const STRIP_COPIES = 10;
+  const MID_COPY     = 3;
+
+  function centreY(copyIndex, prizeIndex, n) {
+    return -((copyIndex * n + prizeIndex) * CELL_H) + CELL_H;
+  }
+
+  function buildReel(stripEl, tier) {
+    stripEl.innerHTML = '';
+    for (let c = 0; c < STRIP_COPIES; c++) {
+      for (const p of tier.prizes) {
+        const cell = document.createElement('div');
+        cell.className = 'reel-cell';
+        if (p.imgIcon) {
+          cell.innerHTML = `<img class="cell-icon" src="${p.imgIcon}" alt="${p.label}"><span class="cell-label">${p.label}</span>`;
+        } else {
+          const iconClass = p.id === 'btc' ? 'cell-icon btc-icon' : 'cell-icon';
+          cell.innerHTML = `<span class="${iconClass}">${p.icon}</span><span class="cell-label">${p.label}</span>`;
         }
+        stripEl.appendChild(cell);
+      }
+    }
+  }
 
-        // By default, if the user doesn't "skip" the ad before the video ends,
-        // we call fail to restart. You're welcome to replace this with a survey
-        // or other interaction instead (see examples/survey).
-        if (event.data.type === 'adFinished') {
-          skipButton.style.display = 'none';
-          window.top.postMessage({ type: 'fail' }, '*');
+  const strips = [0, 1, 2].map(i => document.getElementById('strip-' + i));
+
+  function rebuildReels() {
+    strips.forEach(s => buildReel(s, currentTier()));
+    const n    = currentTier().prizes.length;
+    const initY = centreY(MID_COPY, 0, n);
+    strips.forEach(s => { s.style.transition = 'none'; s.style.transform = `translateY(${initY}px)`; });
+  }
+
+  function spinReel(stripEl, targetIndex, delay, duration, onDone) {
+    const n = currentTier().prizes.length;
+    const landingCopy = MID_COPY + 3 + Math.floor(Math.random() * 2);
+    const endY    = centreY(landingCopy, targetIndex, n);
+    const normalY = centreY(MID_COPY,   targetIndex, n);
+    setTimeout(() => {
+      stripEl.style.transition = `transform ${duration}ms cubic-bezier(0.17, 0.67, 0.12, 1.0)`;
+      stripEl.style.transform  = `translateY(${endY}px)`;
+      setTimeout(() => {
+        stripEl.style.transition = 'none';
+        stripEl.style.transform  = `translateY(${normalY}px)`;
+        if (onDone) onDone();
+      }, duration + 20);
+    }, delay);
+  }
+
+  // Slot prize picker (uses weights, winCount % 6, returns -1 for loss)
+  function _pickPrizeSlot() {
+    const prizes  = currentTier().prizes;
+    const weights = getEffectivePrizeWeights(currentTier().weights, prizes);
+    const ticketPrizeIndices = prizes.reduce((acc, p, i) => { if (p.ticketBonus > 0) acc.push(i); return acc; }, []);
+    const drainActive = _drainMode && !_bonusRound;
+    const upgradeIndex = prizes.findIndex(p => p.isUpgrade);
+    const canForceSkipReduction = !skipUnlocked && skipCooldown > 0;
+    function randomTicketPrize() { return ticketPrizeIndices[Math.floor(Math.random() * ticketPrizeIndices.length)]; }
+
+    if (!drainActive) {
+      if (tickets <= 1)                          return randomTicketPrize();
+      if (tickets === 2 && Math.random() < 0.75) return randomTicketPrize();
+      if (tickets === 3 && Math.random() < 0.50) return randomTicketPrize();
+    }
+
+    const forcedDiamondJackpot = maybeForceDiamondJackpot(prizes);
+    if (forcedDiamondJackpot !== -1) return forcedDiamondJackpot;
+
+    const cyclePos = winCount % 6;
+    if (upgradeIndex !== -1 && cyclePos === 5) {
+      skipGuaranteeSpin = canForceSkipReduction ? Math.floor(Math.random() * 5) : -1;
+      return upgradeIndex;
+    }
+    const skipPrizeIndex = prizes.findIndex(p => p.skipReduction);
+    if (canForceSkipReduction && upgradeIndex !== -1 && skipPrizeIndex !== -1 && cyclePos === skipGuaranteeSpin) return skipPrizeIndex;
+
+    if (Math.random() < 0.50) {
+      const effectiveWeights = weights.map((w, i) => (((drainActive || tickets > 3) && prizes[i].ticketBonus > 0) || prizes[i].skipReduction) ? 0 : w);
+      const total = effectiveWeights.reduce((a, b) => a + b, 0);
+      let r = Math.random() * total;
+      for (let i = 0; i < effectiveWeights.length; i++) { r -= effectiveWeights[i]; if (r <= 0) return i; }
+      return 0;
+    }
+    return -1;
+  }
+
+  function pickLossSymbols() {
+    const n = currentTier().prizes.length;
+    const a = Math.floor(Math.random() * n);
+    let b = Math.floor(Math.random() * (n - 1)); if (b >= a) b++;
+    let c; do { c = Math.floor(Math.random() * n); } while (c === a || c === b);
+    return [a, b, c];
+  }
+
+  // Slot doSpin
+  function _doSpinSlot(isFree) {
+    spinning = true;
+    updateSpinBtn();
+    playSpinStart();
+    window.top.postMessage({ type: 'pause' }, '*');
+
+    spinCount++;
+    const prizeIndex = _pickPrizeSlot();
+    trackDiamondRoundPlayed(currentTier().prizes, prizeIndex);
+    if (prizeIndex !== -1) winCount++;
+    if (!isFree) setTickets(tickets - 1);
+
+    const prizes = currentTier().prizes;
+    let reel0, reel1, reel2;
+
+    if (prizeIndex === -1) {
+      const [a, b, c] = pickLossSymbols();
+      if (Math.random() < 0.40) {
+        reel0 = a; reel1 = a; reel2 = (a + 1) % prizes.length;
+        lastWasNearMiss = true;
+      } else {
+        reel0 = a; reel1 = b; reel2 = c;
+        lastWasNearMiss = false;
+      }
+      pendingPrize = null;
+    } else {
+      reel0 = prizeIndex; reel1 = prizeIndex; reel2 = prizeIndex;
+      pendingPrize = prizes[prizeIndex];
+    }
+
+    const SPIN_TIMES = [1200, 1800, 2400];
+    const ac = getAC(), nowAC = ac.currentTime;
+    playReelStop(nowAC + SPIN_TIMES[0] / 1000, 220);
+    playReelStop(nowAC + SPIN_TIMES[1] / 1000, 196);
+    playReelStop(nowAC + SPIN_TIMES[2] / 1000, 174);
+
+    let done = 0;
+    function onReelDone() { if (++done === 3) onAllReelsDone(); }
+    spinReel(strips[0], reel0,   0, SPIN_TIMES[0], onReelDone);
+    spinReel(strips[1], reel1, 200, SPIN_TIMES[1], onReelDone);
+    spinReel(strips[2], reel2, 400, SPIN_TIMES[2], onReelDone);
+  }
+
+  function onAllReelsDone() {
+    if (!pendingPrize) {
+      if (lastWasNearMiss) {
+        playNearMiss();
+        const nmEl = document.getElementById('near-miss-msg');
+        const msgs = ['SO CLOSE! Try again! 🔥','ONE MORE SPIN! 😤','ALMOST! The next one is yours! ⚡'];
+        nmEl.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+        nmEl.style.display = 'block';
+        setTimeout(() => { nmEl.style.display = 'none'; }, 1800);
+      }
+      spinning = false;
+      if (tickets <= 0 && _drainMode && !_bonusRound) {
+        setTimeout(() => ootPopup.classList.add('show'), 350);
+      } else if (tickets <= 0 && _bonusRound) {
+        setTimeout(() => setTickets(3), 350);
+      } else {
+        window.top.postMessage({ type: 'play' }, '*');
+      }
+      updateSpinBtn();
+    } else {
+      const winLine = document.getElementById('win-line');
+      if (winLine) { winLine.classList.add('flash'); setTimeout(() => winLine.classList.remove('flash'), 2500); }
+      showWinPopup(pendingPrize);
+    }
+  }
+
+  // Wire up slot spin button + initial reel build
+  if (ACTIVE_GAME === 'slot' && spinBtnEl) {
+    spinBtnEl.addEventListener('click', () => {
+      if (spinning || tickets <= 0 || !adActive) return;
+      doSpin(false);
+    });
+    rebuildReels();
+  }
+
+  // ═══════════════════════════════════════
+  // SCRATCH FUNCTIONS
+  // ═══════════════════════════════════════
+
+  // Scratch-specific audio
+  function playScratch() {
+    const ac = getAC(), t = ac.currentTime;
+    const bufLen = Math.floor(_ac.sampleRate * 0.07);
+    const buf = _ac.createBuffer(1, bufLen, _ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / bufLen);
+    const src = _ac.createBufferSource(); src.buffer = buf;
+    const flt = _ac.createBiquadFilter(); flt.type = 'highpass'; flt.frequency.value = 3000;
+    const g = _ac.createGain(); g.gain.setValueAtTime(0.18, t);
+    src.connect(flt); flt.connect(g); g.connect(ac.destination); src.start(t);
+  }
+
+  function playReveal() {
+    const ac = getAC(), t = ac.currentTime;
+    const osc = ac.createOscillator(), g = ac.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, t); osc.frequency.exponentialRampToValueAtTime(900, t + 0.08);
+    g.gain.setValueAtTime(0.2, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    osc.connect(g); g.connect(ac.destination); osc.start(t); osc.stop(t + 0.15);
+  }
+
+  function playDiscard() {
+    const ac = getAC(), t = ac.currentTime;
+    const osc = ac.createOscillator(), g = ac.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(300, t); osc.frequency.exponentialRampToValueAtTime(80, t + 0.3);
+    g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    osc.connect(g); g.connect(ac.destination); osc.start(t); osc.stop(t + 0.4);
+  }
+
+  function playDeal() {
+    const ac = getAC(), t = ac.currentTime;
+    const osc = ac.createOscillator(), g = ac.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(220, t); osc.frequency.exponentialRampToValueAtTime(440, t + 0.18);
+    g.gain.setValueAtTime(0.25, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    osc.connect(g); g.connect(ac.destination); osc.start(t); osc.stop(t + 0.25);
+  }
+
+  // Prize picker for scratch (uses weights, winCount % 6, returns -1 for loss)
+  function pickWinningPrize() {
+    const prizes  = currentTier().prizes;
+    const weights = getEffectivePrizeWeights(currentTier().weights, prizes);
+    const ticketPrizeIndices = prizes.reduce((acc, p, i) => { if (p.ticketBonus > 0) acc.push(i); return acc; }, []);
+    const drainActive = _drainMode && !_bonusRound;
+    const upgradeIndex = prizes.findIndex(p => p.isUpgrade);
+    const canForceSkipReduction = !skipUnlocked && skipCooldown > 0;
+    function randomTicketPrize() { return ticketPrizeIndices[Math.floor(Math.random() * ticketPrizeIndices.length)]; }
+
+    if (!drainActive) {
+      if (tickets <= 1)                          return randomTicketPrize();
+      if (tickets === 2 && Math.random() < 0.75) return randomTicketPrize();
+      if (tickets === 3 && Math.random() < 0.50) return randomTicketPrize();
+    }
+
+    const forcedDiamondJackpot = maybeForceDiamondJackpot(prizes);
+    if (forcedDiamondJackpot !== -1) return forcedDiamondJackpot;
+
+    const cyclePos = winCount % 6;
+    if (upgradeIndex !== -1 && cyclePos === 5) {
+      skipGuaranteeSpin = canForceSkipReduction ? Math.floor(Math.random() * 5) : -1;
+      return upgradeIndex;
+    }
+    const skipPrizeIndex = prizes.findIndex(p => p.skipReduction);
+    if (canForceSkipReduction && upgradeIndex !== -1 && skipPrizeIndex !== -1 && cyclePos === skipGuaranteeSpin) return skipPrizeIndex;
+
+    if (Math.random() < 0.50) {
+      const effectiveWeights = weights.map((w, i) => (((drainActive || tickets > 3) && prizes[i].ticketBonus > 0) || prizes[i].skipReduction) ? 0 : w);
+      const total = effectiveWeights.reduce((a, b) => a + b, 0);
+      let r = Math.random() * total;
+      for (let i = 0; i < effectiveWeights.length; i++) { r -= effectiveWeights[i]; if (r <= 0) return i; }
+      return 0;
+    }
+    return -1;
+  }
+
+  // Generate 3×3 grid with win on a random line (or guaranteed no-win)
+  function generateGrid(winPrizeIndex) {
+    const n = currentTier().prizes.length;
+    const grid = new Array(9);
+    if (winPrizeIndex === -1) {
+      let attempts = 0;
+      do {
+        for (let i = 0; i < 9; i++) grid[i] = Math.floor(Math.random() * n);
+        attempts++;
+      } while (attempts < 200 && WIN_LINES.some(line => line.every(idx => grid[idx] === grid[line[0]])));
+      // Safety: if a win line survived all 200 attempts, force-break it
+      const _stray = WIN_LINES.find(line => line.every(idx => grid[idx] === grid[line[0]]));
+      if (_stray) grid[_stray[2]] = (grid[_stray[0]] + 1) % n;
+      return grid;
+    }
+    const lineIdx = Math.floor(Math.random() * WIN_LINES.length);
+    const winLineIndices = WIN_LINES[lineIdx];
+    for (let i = 0; i < 9; i++) grid[i] = Math.floor(Math.random() * n);
+    for (const idx of winLineIndices) grid[idx] = winPrizeIndex;
+    for (const line of WIN_LINES) {
+      if (line === winLineIndices) continue;
+      if (line.every(idx => grid[idx] === grid[line[0]])) {
+        grid[line[2]] = (grid[line[0]] + 1) % n;
+      }
+    }
+    return grid;
+  }
+
+  // Scratch grid DOM
+  const scratchGrid = document.getElementById('scratch-grid');
+
+  function drawFoil(ctx, tier, _cellIdx) {
+    const w = 110, h = 90;
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, tier.foilColor); grad.addColorStop(0.4, tier.foilHighlight);
+    grad.addColorStop(0.7, tier.foilColor); grad.addColorStop(1, tier.foilHighlight);
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
+    for (let x = -h; x < w + h; x += 8) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + h, h); ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.07)'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center';
+    const syms = ['$','★','?','$','★'];
+    for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++)
+      ctx.fillText(syms[(row * 3 + col) % syms.length], 18 + col * 37, 22 + row * 28);
+    const vign = ctx.createRadialGradient(w/2, h/2, 20, w/2, h/2, 80);
+    vign.addColorStop(0, 'rgba(0,0,0,0)'); vign.addColorStop(1, 'rgba(0,0,0,0.35)');
+    ctx.fillStyle = vign; ctx.fillRect(0, 0, w, h);
+  }
+
+  function buildCard() {
+    cardInteractive = false;
+    scratchCtxs = [];
+    scratchGrid.innerHTML = '';
+    const tier = currentTier(), prizes = tier.prizes;
+
+    for (let i = 0; i < 9; i++) {
+      const p = prizes[gridPrizes[i]];
+      const cell = document.createElement('div');
+      cell.className = 'scratch-cell'; cell.dataset.idx = i;
+      cell.style.borderColor = tier.cardBorder + '66'; cell.style.background = tier.cellBg;
+
+      const prizeDiv = document.createElement('div');
+      prizeDiv.className = 'cell-prize'; prizeDiv.style.background = tier.cellBg;
+      if (p.imgIcon) {
+        const img = document.createElement('img');
+        img.src = p.imgIcon; img.alt = p.label; img.className = 'prize-icon';
+        img.style.cssText = 'width:30px;height:30px;object-fit:contain;';
+        prizeDiv.appendChild(img);
+      } else {
+        const iconSpan = document.createElement('span');
+        iconSpan.className = p.id === 'btc' ? 'prize-icon btc-icon' : 'prize-icon';
+        iconSpan.textContent = p.icon;
+        prizeDiv.appendChild(iconSpan);
+      }
+      const lblSpan = document.createElement('span'); lblSpan.className = 'prize-lbl'; lblSpan.textContent = p.label;
+      prizeDiv.appendChild(lblSpan);
+      cell.appendChild(prizeDiv);
+
+      const cvs = document.createElement('canvas'); cvs.className = 'scratch-canvas';
+      cvs.width = 110; cvs.height = 90;
+      cell.appendChild(cvs); scratchGrid.appendChild(cell);
+
+      const ctx = cvs.getContext('2d');
+      drawFoil(ctx, tier, i);
+      scratchCtxs.push(ctx);
+    }
+
+    revealedCells = new Array(9).fill(false);
+    winLine = null; cardDone = false;
+    updateProgress();
+    attachScratchEvents();
+    cardInteractive = true;
+    document.getElementById('scratch-hint').textContent = 'Scratch with mouse or finger!';
+    updateNewCardBtn();
+  }
+
+  // Scratch events (attached once)
+  let _lastScratchX = null, _lastScratchY = null, _lastScratchCellIdx = -1;
+  let _scratchSoundTimer = null, _scratchEventsAttached = false;
+
+  function attachScratchEvents() {
+    if (_scratchEventsAttached) return;
+    _scratchEventsAttached = true;
+    const overlay = document.getElementById('overlay-container');
+
+    function getCellAt(clientX, clientY) {
+      const cells = scratchGrid.querySelectorAll('.scratch-cell');
+      for (let i = 0; i < cells.length; i++) {
+        const r = cells[i].getBoundingClientRect();
+        if (clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom) return i;
+      }
+      return -1;
+    }
+
+    function scratchAt(clientX, clientY) {
+      if (!scratching || cardDone || !cardInteractive) return;
+      const idx = getCellAt(clientX, clientY);
+      if (idx === -1) { _lastScratchCellIdx = -1; return; }
+      const cvs = scratchGrid.querySelectorAll('.scratch-canvas')[idx];
+      const rect = cvs.getBoundingClientRect();
+      const x = clientX - rect.left, y = clientY - rect.top;
+      const ctx = scratchCtxs[idx];
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath(); ctx.arc(x, y, 36, 0, Math.PI * 2); ctx.fill();
+      if (_lastScratchCellIdx === idx && _lastScratchX !== null) {
+        ctx.beginPath(); ctx.moveTo(_lastScratchX, _lastScratchY); ctx.lineTo(x, y);
+        ctx.lineWidth = 72; ctx.lineCap = 'round'; ctx.stroke();
+      }
+      _lastScratchCellIdx = idx; _lastScratchX = x; _lastScratchY = y;
+      if (!_scratchSoundTimer) { playScratch(); _scratchSoundTimer = setTimeout(() => { _scratchSoundTimer = null; }, 80); }
+      checkReveal(idx, ctx);
+      updateProgress();
+    }
+
+    overlay.addEventListener('mousedown', e => {
+      if (cardDone || !cardInteractive) return;
+      scratching = true; _lastScratchX = null; _lastScratchY = null; _lastScratchCellIdx = -1;
+      scratchAt(e.clientX, e.clientY);
+    });
+    document.addEventListener('mousemove', e => { scratchAt(e.clientX, e.clientY); });
+    document.addEventListener('mouseup', () => {
+      scratching = false; _lastScratchX = null; _lastScratchY = null; _lastScratchCellIdx = -1;
+    });
+    overlay.addEventListener('touchstart', e => {
+      if (cardDone || !cardInteractive) return;
+      e.preventDefault(); scratching = true;
+      _lastScratchX = null; _lastScratchY = null; _lastScratchCellIdx = -1;
+      const t = e.touches[0]; scratchAt(t.clientX, t.clientY);
+    }, { passive: false });
+    document.addEventListener('touchmove', e => {
+      if (!scratching) return; e.preventDefault();
+      const t = e.touches[0]; scratchAt(t.clientX, t.clientY);
+    }, { passive: false });
+    document.addEventListener('touchend', () => { scratching = false; });
+  }
+
+  // Reveal detection
+  function checkReveal(cellIdx, ctx) {
+    if (revealedCells[cellIdx]) return;
+    const data = ctx.getImageData(0, 0, 110, 90).data;
+    let cleared = 0;
+    for (let j = 3; j < data.length; j += 4) if (data[j] < 128) cleared++;
+    if (cleared / (110 * 90) > 0.40) {
+      revealedCells[cellIdx] = true;
+      playReveal();
+      checkWin();
+    }
+  }
+
+  function checkWin() {
+    if (cardDone) return;
+    const prizes = currentTier().prizes;
+    for (const line of WIN_LINES) {
+      if (line.every(idx => revealedCells[idx])) {
+        const symbol = gridPrizes[line[0]];
+        if (line.every(idx => gridPrizes[idx] === symbol)) {
+          winLine = line; cardDone = true;
+          highlightWinLine(line);
+          document.getElementById('scratch-hint').textContent = '🎉 You found a winning line!';
+          pendingPrize = prizes[symbol];
+          setTimeout(() => showWinPopup(pendingPrize), 600);
+          return;
         }
-      });
+      }
+    }
+    if (revealedCells.every(Boolean)) {
+      cardDone = true;
+      document.getElementById('scratch-hint').textContent = 'No win this time. Try a new card!';
+      updateNewCardBtn();
+      playDenied();
+      setTimeout(() => document.getElementById('loss-popup').classList.add('show'), 400);
+    }
+  }
 
-      // Your ad overlay code goes here, we've added a simple example below:
-      skipButton.addEventListener('click', () => {
-        skipButton.style.display = 'none';
-        adSuccess();
-      });
+  function highlightWinLine(line) {
+    const cells = scratchGrid.querySelectorAll('.scratch-cell');
+    line.forEach(idx => {
+      cells[idx].classList.add('win-cell');
+      scratchCtxs[idx].clearRect(0, 0, 110, 90);
+    });
+  }
 
-    })(window, document);
-  </script>
+  // Progress bar
+  const progressFill = document.getElementById('scratch-progress-fill');
+  function updateProgress() {
+    if (!progressFill) return;
+    progressFill.style.width = (revealedCells.filter(Boolean).length / 9 * 100) + '%';
+  }
+
+  // updateNewCardBtn (called by updateActionBtn for scratch)
+  function updateNewCardBtn() {
+    if (!newCardBtnEl) return;
+    newCardBtnEl.disabled = !adActive || tickets <= 0 || !cardDone;
+    newCardBtnEl.textContent = tickets <= 0 ? 'NO TICKETS' : '🃏 NEW CARD';
+  }
+
+  // Deal card animation (shared between paid and free)
+  function _doDeal() {
+    const inner = document.getElementById('card-inner');
+    cardInteractive = false;
+    playDiscard();
+    inner.classList.add('discard');
+    setTimeout(() => {
+      inner.classList.remove('discard'); inner.style.opacity = '0';
+      buildCard();
+      inner.style.opacity = '1'; inner.classList.add('deal-in');
+      playDeal();
+      setTimeout(() => inner.classList.remove('deal-in'), 500);
+      window.top.postMessage({ type: 'pause' }, '*');
+    }, 620);
+  }
+
+  function dealNewCard(isFree) {
+    if (!adActive) return;
+    if (!isFree && tickets <= 0) return;
+    if (!isFree) setTickets(tickets - 1);
+    scratchCount++;
+    const winPrizeIdx = pickWinningPrize();
+    trackDiamondRoundPlayed(currentTier().prizes, winPrizeIdx);
+    if (winPrizeIdx !== -1) winCount++;
+    gridPrizes = generateGrid(winPrizeIdx);
+    cardCount_total++;
+    document.getElementById('card-number').textContent = 'CARD #' + cardCount_total;
+    _doDeal();
+  }
+
+  function dealFreeCard() { dealNewCard(true); }
+
+  // Wire up new-card button
+  if (ACTIVE_GAME === 'scratch' && newCardBtnEl) {
+    newCardBtnEl.addEventListener('click', () => dealNewCard(false));
+  }
+
+  // Loss popup OK
+  const lossPopupOk = document.getElementById('loss-ok');
+  if (lossPopupOk) {
+    lossPopupOk.addEventListener('click', () => {
+      document.getElementById('loss-popup').classList.remove('show');
+      if (tickets <= 0 && _drainMode && !_bonusRound) {
+        setTimeout(() => document.getElementById('out-of-tickets-popup').classList.add('show'), 350);
+      } else if (tickets <= 0 && _bonusRound) {
+        setTimeout(() => setTickets(3), 350);
+      } else {
+        window.top.postMessage({ type: 'play' }, '*');
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════
+  // WIN POPUP
+  // ═══════════════════════════════════════
+  const winPopup   = document.getElementById('win-popup');
+  const winIcon    = document.getElementById('win-prize-icon');
+  const winName    = document.getElementById('win-prize-name');
+  const winFlavor  = document.getElementById('win-flavor');
+  const collectBtn = document.getElementById('collect-btn');
+  const winTitle   = document.getElementById('win-title');
+
+  function _renderWinPopup(prize) {
+    if (prize.imgIcon) {
+      const isWideWinIcon = prize.id === 'awp_dl';
+      const iconW = isWideWinIcon ? 220 : 60;
+      const iconH = isWideWinIcon ? 88 : 60;
+      winIcon.style.margin = isWideWinIcon ? '4px 0 0' : '10px 0 4px';
+      winIcon.innerHTML = `<img src="${prize.imgIcon}" style="width:${iconW}px;height:${iconH}px;object-fit:contain;">`;
+    } else if (prize.id === 'btc') {
+      winIcon.style.margin = '10px 0 4px';
+      winIcon.innerHTML = '<span class="btc-icon">₿</span>';
+    } else {
+      winIcon.style.margin = '10px 0 4px';
+      winIcon.textContent = prize.icon;
+    }
+    winName.textContent   = prize.label;
+    winFlavor.textContent = prize.flavor;
+    if (prize.isJackpot) {
+      wonJackpots[prize.id] = true;
+      if (currentTier().id === 'diamond') _diamondNoJackpotRounds = 0;
+      winTitle.textContent = '🚨 JACKPOT! 🚨'; winTitle.style.fontSize = '28px';
+      playJackpot();
+      fireConfetti(200);
+    } else {
+      winTitle.textContent = 'YOU WON!'; winTitle.style.fontSize = '36px';
+      if (prize.ticketBonus > 0) fireConfetti(80);
+      playKaChing();
+    }
+    const freeLabel = ACTIVE_GAME === 'scratch' ? 'FREE CARD! →' : 'FREE SPIN! →';
+    collectBtn.textContent = prize.isFree ? freeLabel : 'COLLECT!';
+    winPopup.classList.add('show');
+  }
+
+  function showWinPopup(prize) {
+    if (prize.isUpgrade) { showUpgradePopup(); return; }
+    if (prize.id === 'dog')    { startDogPopup(prize);       return; }
+    if (prize.id === 'awp_dl') { startSniperMinigame(prize); return; }
+    if (prize.id === 'btc')    { startMazeMinigame(prize);   return; }
+    _renderWinPopup(prize);
+  }
+
+  collectBtn.addEventListener('click', () => {
+    winPopup.classList.remove('show');
+    const prize = pendingPrize;
+    pendingPrize = null;
+    // In drain mode (before bonus round), block ticket gains — player must use up existing tickets
+    if (prize.ticketBonus > 0 && (!_drainMode || _bonusRound)) setTickets(tickets + prize.ticketBonus);
+    if (prize.skipReduction) adjustSkipCooldown(-prize.skipReduction);
+    if (prize.skipInstant)   adjustSkipCooldown(-99999);
+    if (!prize.isFree && prize.ticketBonus === 0 && !prize.skipReduction && !prize.skipInstant) addToPrizeList(prize);
+    if (ACTIVE_GAME !== 'scratch') {
+      spinning = false;
+      window.top.postMessage({ type: 'play' }, '*');
+    }
+    if (prize.isFree) {
+      if (ACTIVE_GAME === 'scratch') setTimeout(() => dealFreeCard(), 400);
+      else setTimeout(() => doSpin(true), 600);
+    } else {
+      if (ACTIVE_GAME === 'scratch') { window.top.postMessage({ type: 'play' }, '*'); }
+      updateActionBtn();
+      // Drain mode: all tickets spent — show exit popup
+      if (tickets <= 0 && _drainMode && !_bonusRound) {
+        setTimeout(() => document.getElementById('out-of-tickets-popup').classList.add('show'), 350);
+      }
+      // Bonus round: auto-refill silently when empty so the game never gets stuck
+      if (tickets <= 0 && _bonusRound) {
+        setTimeout(() => setTickets(3), 350);
+      }
+    }
+  });
+
+  // ═══════════════════════════════════════
+  // DOG KISS POPUP
+  // ═══════════════════════════════════════
+  const dogPopup    = document.getElementById('dog-popup');
+  const dogBox      = document.getElementById('dog-box');
+  const dogImgEl    = document.getElementById('dog-img');
+  const dogImgWrap  = document.getElementById('dog-img-wrap');
+  const dogFeedback = document.getElementById('dog-feedback');
+  const dogCollect  = document.getElementById('dog-collect-btn');
+  const dbgDogBtn   = document.getElementById('dbg-dog');
+  let dogCountdown  = 120, dogInterval = null, dogPrize = null;
+  let dogKissed = false, dogPenalty = false;
+  let _dogCryImgTimer = null, _dogCryTxtTimer = null;
+
+  function updateDogTimer() {
+    if (dogCountdown <= 0) {
+      dogCountdown = 0; clearInterval(dogInterval); dogInterval = null;
+      if (!dogKissed) {
+        dogPenalty = true; playDenied();
+        dogImgEl.src = 'assets/DootCry.png';
+        dogFeedback.textContent = "You don't deserve your new friend!";
+        dogCollect.textContent = 'Continue';
+      } else {
+        dogCollect.textContent = 'NEW FRIEND ❤️';
+      }
+      dogCollect.classList.add('ready');
+    } else {
+      dogCollect.innerHTML = `NEW FRIEND ❤️ (<span id="dog-timer">${dogCountdown}</span>s)`;
+    }
+  }
+
+  function startDogPopup(prize) {
+    dogPrize = prize; dogCountdown = 120; dogKissed = false; dogPenalty = false;
+    dogImgEl.src = 'assets/Doot.png'; dogFeedback.textContent = '';
+    dogCollect.classList.remove('ready');
+    dogCollect.innerHTML = 'NEW FRIEND ❤️ (<span id="dog-timer">120</span>s)';
+    dogPopup.classList.add('show');
+    pauseMinigame();
+    if (dogInterval) clearInterval(dogInterval);
+    dogInterval = setInterval(() => { dogCountdown--; updateDogTimer(); }, 1000);
+  }
+
+  function dogCry() {
+    if (dogPenalty) return;
+    playDenied(); dogImgEl.src = 'assets/DootCry.png';
+    clearTimeout(_dogCryImgTimer); clearTimeout(_dogCryTxtTimer);
+    _dogCryImgTimer = setTimeout(() => { if (dogPopup.classList.contains('show')) dogImgEl.src = 'assets/Doot.png'; }, 500);
+    dogFeedback.textContent = 'You should always kiss your friend on the lips!';
+    _dogCryTxtTimer = setTimeout(() => { dogFeedback.textContent = ''; }, 3000);
+  }
+
+  function _dogHandleKiss(clientX, clientY) {
+    if (dogPenalty) return;
+    const rect = dogImgWrap.getBoundingClientRect();
+    const px = (clientX - rect.left) * (dogImgEl.naturalWidth  / dogImgWrap.offsetWidth);
+    const py = (clientY - rect.top)  * (dogImgEl.naturalHeight / dogImgWrap.offsetHeight);
+    if (px >= 22 && px <= 62 && py >= 75 && py <= 135) {
+      dogKissed = true; dogImgEl.src = 'assets/DootLove.png';
+      playAssetSound('dogKiss');
+      setTimeout(() => { if (dogPopup.classList.contains('show')) dogImgEl.src = 'assets/Doot.png'; }, 500);
+      dogFeedback.textContent = '';
+      dogCountdown = Math.max(0, dogCountdown - 30); updateDogTimer();
+    } else { dogCry(); }
+  }
+  dogImgWrap.addEventListener('click', (e) => _dogHandleKiss(e.clientX, e.clientY));
+  dogImgWrap.addEventListener('touchstart', (e) => { e.preventDefault(); _dogHandleKiss(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+  dogBox.addEventListener('click', (e) => {
+    if (dogImgWrap === e.target || dogImgWrap.contains(e.target)) return;
+    if (dogCollect === e.target || dogCollect.contains(e.target)) return;
+    dogCry();
+  });
+  dogPopup.addEventListener('click', (e) => {
+    if (dogBox === e.target || dogBox.contains(e.target)) return;
+    dogCry();
+  });
+  dogCollect.addEventListener('click', () => {
+    if (!dogCollect.classList.contains('ready')) return;
+    clearInterval(dogInterval); dogInterval = null;
+    dogPopup.classList.remove('show');
+    const wasPenalty = dogPenalty; dogPenalty = false;
+    const prize = dogPrize; dogPrize = null;
+    resumeMinigame();
+    if (!wasPenalty) {
+      playAssetSound('dogBark');
+      pendingPrize = prize;
+      _renderWinPopup(prize);
+    } else {
+      pendingPrize = null;
+      if (ACTIVE_GAME !== 'scratch') spinning = false;
+      if (tickets <= 0 && _drainMode && !_bonusRound) {
+        setTimeout(() => ootPopup.classList.add('show'), 350);
+      } else if (tickets <= 0 && _bonusRound) {
+        setTimeout(() => setTickets(3), 350);
+      } else {
+        window.top.postMessage({ type: 'play' }, '*');
+      }
+      updateActionBtn();
+    }
+  });
+
+  if (IS_DEBUG) dbgDogBtn.style.display = 'block';
+  dbgDogBtn.addEventListener('click', () => {
+    pendingPrize = { id: 'dog', label: 'Dog', icon: '🐕', flavor: 'It got lost and found a new friend!', imgIcon: 'assets/Doot.png', isJackpot: false, isFree: false, ticketBonus: 0 };
+    startDogPopup(pendingPrize);
+  });
+
+  // ═══════════════════════════════════════
+  // MINIGAME FAIL POPUP
+  // ═══════════════════════════════════════
+  const minigameFailPopupEl = document.getElementById('minigame-fail-popup');
+  const minigameFailTitle   = document.getElementById('minigame-fail-title');
+  const minigameFailMsg     = document.getElementById('minigame-fail-msg');
+  const minigameFailBtn     = document.getElementById('minigame-fail-btn');
+  minigameFailBtn.addEventListener('click', () => {
+    minigameFailPopupEl.classList.remove('show');
+    pendingPrize = null;
+    if (ACTIVE_GAME !== 'scratch') spinning = false;
+    if (tickets <= 0 && _drainMode && !_bonusRound) {
+      setTimeout(() => ootPopup.classList.add('show'), 350);
+    } else if (tickets <= 0 && _bonusRound) {
+      setTimeout(() => setTickets(3), 350);
+    } else {
+      window.top.postMessage({ type: 'play' }, '*');
+    }
+    updateActionBtn();
+  });
+
+  // ═══════════════════════════════════════
+  // MAZE MINIGAME (BTC)
+  // ═══════════════════════════════════════
+  const mazePopup       = document.getElementById('maze-popup');
+  const mazeBox         = document.getElementById('maze-box');
+  const mazeCanvas      = document.getElementById('maze-canvas');
+  const mazeTimerHudEl  = document.getElementById('maze-timer-hud');
+  const mazeIntro       = document.getElementById('maze-intro');
+  const mazeIntroBtn    = document.getElementById('maze-intro-btn');
+  const dbgMazeBtn      = document.getElementById('dbg-maze');
+
+  const MAZE_W          = 1254, MAZE_H = 1254;    // natural image px
+  const MAZE_START_NX   = 190,  MAZE_START_NY = 450;  // entry in natural px
+  const MAZE_EXIT_NX    = 1050, MAZE_EXIT_NY  = 780;  // exit center natural px
+  const MAZE_EXIT_D_R       = 22;   // exit win-zone radius in display px
+  const MAZE_FINISH_DRAW_W  = 50;   // finish box visual width (display px)
+  const MAZE_FINISH_DRAW_H  = 36;   // finish box visual height (display px)
+  const KRAKUS_HIT_R        = 9;    // collision check radius in display px
+  const KRAKUS_DRAW_R       = 13;   // drawn sprite radius in display px
+  const MAZE_SECONDS    = 30;
+
+  let mazePrize         = null;
+  let mazeActive        = false;
+  let mazeDragging      = false;
+  let mazeKrakenX       = 0, mazeKrakenY = 0; // display coords
+  let mazePrevMx        = 0, mazePrevMy  = 0; // mouse coords at last drag event
+  let mazeCountdown     = MAZE_SECONDS;
+  let mazeTimerInt      = null;
+  let mazeCtx           = null;
+  let mazeAnimFrame     = null;
+  let mazePixelData     = null;
+  let mazeImgReady      = false;
+  let krakenImgReady    = false;
+  let mazeBoundsMinX    = 0, mazeBoundsMaxX = MAZE_W;
+  let mazeBoundsMinY    = 0, mazeBoundsMaxY = MAZE_H;
+
+  const _mazeImg   = new Image();
+  const _krakenImg = new Image();
+
+  _mazeImg.onload = () => {
+    mazeImgReady = true;
+    const ofc = document.createElement('canvas');
+    ofc.width = MAZE_W; ofc.height = MAZE_H;
+    const ofx = ofc.getContext('2d');
+    ofx.drawImage(_mazeImg, 0, 0);
+    try {
+      mazePixelData = ofx.getImageData(0, 0, MAZE_W, MAZE_H);
+      // Auto-detect bounding box of maze walls to use as movement fence
+      let minX = MAZE_W, maxX = 0, minY = MAZE_H, maxY = 0;
+      const d = mazePixelData.data;
+      for (let y = 0; y < MAZE_H; y++) {
+        for (let x = 0; x < MAZE_W; x++) {
+          if (d[(y * MAZE_W + x) * 4 + 3] > 50) {
+            if (x < minX) minX = x; if (x > maxX) maxX = x;
+            if (y < minY) minY = y; if (y > maxY) maxY = y;
+          }
+        }
+      }
+      mazeBoundsMinX = minX; mazeBoundsMaxX = maxX;
+      mazeBoundsMinY = minY; mazeBoundsMaxY = maxY;
+    } catch(e) {}
+  };
+  _krakenImg.onload = () => { krakenImgReady = true; };
+  _mazeImg.src   = 'assets/maze.png';
+  _krakenImg.src = 'assets/krakus.png';
+
+  function _mazeImgRect() {
+    const cw = mazeCanvas.width  || (mazeBox.offsetWidth || 500);
+    const ch = mazeCanvas.height || (mazeBox.offsetHeight || 460);
+    const scale = Math.min(cw / MAZE_W, ch / MAZE_H);
+    return { ox: (cw - MAZE_W * scale) / 2, oy: (ch - MAZE_H * scale) / 2, scale };
+  }
+
+  function _mazeWallAt(nx, ny) {
+    const ix = Math.round(nx), iy = Math.round(ny);
+    if (ix < 0 || iy < 0 || ix >= MAZE_W || iy >= MAZE_H) return true;
+    if (!mazePixelData) return false;
+    const idx = (iy * MAZE_W + ix) * 4;
+    return mazePixelData.data[idx + 3] > 50; // alpha > 50 = wall pixel
+  }
+
+  function _mazeHasWall(cx, cy, ox, oy, scale) {
+    // Sample 12 points on the hitbox circle
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      const nx = (cx + Math.cos(a) * KRAKUS_HIT_R - ox) / scale;
+      const ny = (cy + Math.sin(a) * KRAKUS_HIT_R - oy) / scale;
+      if (_mazeWallAt(nx, ny)) return true;
+    }
+    return false;
+  }
+
+  function mazeDraw() {
+    if (!mazeCtx) return;
+    const W = mazeCanvas.width, H = mazeCanvas.height;
+    const { ox, oy, scale } = _mazeImgRect();
+    const mw = MAZE_W * scale, mh = MAZE_H * scale;
+    mazeCtx.fillStyle = '#d0b8e8'; mazeCtx.fillRect(0, 0, W, H);
+    mazeCtx.fillStyle = '#d0b8e8'; mazeCtx.fillRect(ox, oy, mw, mh);
+    if (mazeImgReady) mazeCtx.drawImage(_mazeImg, ox, oy, mw, mh);
+    // Exit: red FINISH box
+    const exitDx = ox + MAZE_EXIT_NX * scale;
+    const exitDy = oy + MAZE_EXIT_NY * scale;
+    const eW = MAZE_FINISH_DRAW_W, eH = MAZE_FINISH_DRAW_H;
+    mazeCtx.save();
+    mazeCtx.fillStyle = '#cc0000';
+    mazeCtx.fillRect(exitDx - eW / 2, exitDy - eH / 2, eW, eH);
+    mazeCtx.strokeStyle = '#ff6666'; mazeCtx.lineWidth = 1.5;
+    mazeCtx.strokeRect(exitDx - eW / 2, exitDy - eH / 2, eW, eH);
+    mazeCtx.fillStyle = '#fff';
+    mazeCtx.font = `bold ${Math.round(eH * 0.34)}px Bungee, sans-serif`;
+    mazeCtx.textAlign = 'center'; mazeCtx.textBaseline = 'middle';
+    mazeCtx.fillText('FINISH', exitDx, exitDy);
+    mazeCtx.restore();
+    // Octopus
+    if (krakenImgReady) {
+      mazeCtx.drawImage(_krakenImg, mazeKrakenX - KRAKUS_DRAW_R, mazeKrakenY - KRAKUS_DRAW_R, KRAKUS_DRAW_R * 2, KRAKUS_DRAW_R * 2);
+    } else {
+      mazeCtx.fillStyle = '#4488ff';
+      mazeCtx.beginPath(); mazeCtx.arc(mazeKrakenX, mazeKrakenY, KRAKUS_DRAW_R, 0, Math.PI * 2); mazeCtx.fill();
+    }
+    mazeAnimFrame = requestAnimationFrame(mazeDraw);
+  }
+
+  function _mazeDragStart(clientX, clientY) {
+    if (!mazeActive) return;
+    const r = mazeCanvas.getBoundingClientRect();
+    const mx = clientX - r.left;
+    const my = clientY - r.top;
+    const dist = Math.sqrt((mx - mazeKrakenX) ** 2 + (my - mazeKrakenY) ** 2);
+    if (dist <= KRAKUS_DRAW_R + 8) {
+      mazeDragging = true;
+      mazePrevMx = mx; mazePrevMy = my;
+      mazeCanvas.style.cursor = 'grabbing';
+      _mazeStartWaka();
+    }
+  }
+
+  function _mazeStartWaka() {
+    const w = _assetAudio.waka;
+    const volSlider = document.getElementById('vol-slider');
+    w.volume = Math.max(0, Math.min(1, parseFloat(volSlider ? volSlider.value : '0.5') || 0));
+    if (w.paused) w.play().catch(function() {});
+  }
+
+  function _mazeStopWaka() {
+    const w = _assetAudio.waka;
+    w.pause(); w.currentTime = 0;
+  }
+
+  function _mazeDragEnd() {
+    mazeDragging = false;
+    mazeCanvas.style.cursor = 'grab';
+    _mazeStopWaka();
+  }
+
+  function _mazeMoveOctopus(clientX, clientY) {
+    if (!mazeActive) return;
+    const r = mazeCanvas.getBoundingClientRect();
+    const mx = clientX - r.left;
+    const my = clientY - r.top;
+    // Update cursor hint regardless
+    const hoverDist = Math.sqrt((mx - mazeKrakenX) ** 2 + (my - mazeKrakenY) ** 2);
+    if (!mazeDragging) {
+      mazeCanvas.style.cursor = hoverDist <= KRAKUS_DRAW_R + 8 ? 'grab' : 'default';
+      return;
+    }
+    const dx = mx - mazePrevMx;
+    const dy = my - mazePrevMy;
+    mazePrevMx = mx; mazePrevMy = my;
+    const { ox, oy, scale } = _mazeImgRect();
+    // Fence bounds
+    const fenceMinX = ox + Math.min(MAZE_START_NX - 10, mazeBoundsMinX) * scale;
+    const fenceMaxX = ox + mazeBoundsMaxX * scale;
+    const fenceMinY = oy + mazeBoundsMinY * scale;
+    const fenceMaxY = oy + mazeBoundsMaxY * scale;
+    // Sub-step movement to prevent tunneling through thin walls
+    const STEP = 2;
+    const steps = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / STEP));
+    const sx = dx / steps, sy = dy / steps;
+    for (let i = 0; i < steps; i++) {
+      const tryX = Math.max(fenceMinX, Math.min(fenceMaxX, mazeKrakenX + sx));
+      const tryY = Math.max(fenceMinY, Math.min(fenceMaxY, mazeKrakenY + sy));
+      if (!_mazeHasWall(tryX, mazeKrakenY, ox, oy, scale)) mazeKrakenX = tryX;
+      if (!_mazeHasWall(mazeKrakenX, tryY, ox, oy, scale)) mazeKrakenY = tryY;
+    }
+    // Win check — require line-of-sight to exit (no wall between octopus and finish)
+    const exitDx = ox + MAZE_EXIT_NX * scale;
+    const exitDy = oy + MAZE_EXIT_NY * scale;
+    if (Math.sqrt((mazeKrakenX - exitDx) ** 2 + (mazeKrakenY - exitDy) ** 2) <= MAZE_EXIT_D_R) {
+      let los = true;
+      for (let t = 0.2; t < 1.0; t += 0.2) {
+        const lx = (mazeKrakenX + (exitDx - mazeKrakenX) * t - ox) / scale;
+        const ly = (mazeKrakenY + (exitDy - mazeKrakenY) * t - oy) / scale;
+        if (_mazeWallAt(lx, ly)) { los = false; break; }
+      }
+      if (los) mazeEndGame(true);
+    }
+  }
+
+  mazeCanvas.addEventListener('mousedown',  (e) => _mazeDragStart(e.clientX, e.clientY));
+  mazeCanvas.addEventListener('mouseup',    ()  => _mazeDragEnd());
+  mazeCanvas.addEventListener('mouseleave', ()  => _mazeDragEnd());
+  mazeCanvas.addEventListener('mousemove',  (e) => _mazeMoveOctopus(e.clientX, e.clientY));
+  mazeCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); _mazeDragStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+  mazeCanvas.addEventListener('touchend',   (e) => { e.preventDefault(); _mazeDragEnd(); }, { passive: false });
+  mazeCanvas.addEventListener('touchmove',  (e) => { e.preventDefault(); _mazeMoveOctopus(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+
+  function mazeEndGame(won) {
+    mazeActive = false;
+    _mazeStopWaka();
+    clearInterval(mazeTimerInt); mazeTimerInt = null;
+    if (mazeAnimFrame) { cancelAnimationFrame(mazeAnimFrame); mazeAnimFrame = null; }
+    mazePopup.classList.remove('show');
+    resumeMinigame();
+    if (won) {
+      pendingPrize = mazePrize; mazePrize = null;
+      fireConfetti(200); playJackpot();
+      _renderWinPopup(pendingPrize);
+    } else {
+      playDenied();
+      mazePrize = null; pendingPrize = null;
+      minigameFailTitle.textContent = '⏰ TOO SLOW!';
+      minigameFailMsg.textContent   = 'The Bitcoin wallet slipped away. The maze was too much!';
+      minigameFailPopupEl.classList.add('show');
+    }
+  }
+
+  function startMazeMinigame(prize) {
+    mazePrize = prize;
+    mazeCountdown = MAZE_SECONDS;
+    mazeTimerHudEl.textContent = `⏱ ${MAZE_SECONDS}s`;
+    mazeActive = false; // held until intro dismissed
+    mazeDragging = false;
+    mazeIntro.classList.add('show');
+    mazePopup.classList.add('show');
+    pauseMinigame();
+    const cw = 500, ch = 460;
+    mazeCanvas.width  = cw;
+    mazeCanvas.height = ch;
+    mazeCtx = mazeCanvas.getContext('2d');
+    const { ox, oy, scale } = _mazeImgRect();
+    mazeKrakenX = ox + MAZE_START_NX * scale;
+    mazeKrakenY = oy + MAZE_START_NY * scale;
+    mazePrevMx  = mazeKrakenX; mazePrevMy = mazeKrakenY;
+    if (mazeAnimFrame) cancelAnimationFrame(mazeAnimFrame);
+    mazeDraw();
+  }
+
+  mazeIntroBtn.addEventListener('click', () => {
+    mazeIntro.classList.remove('show');
+    mazeActive = true;
+    mazeDragging = false;
+    mazeCanvas.style.cursor = 'default';
+    if (!mazeAnimFrame) mazeAnimFrame = requestAnimationFrame(mazeDraw);
+    mazeTimerInt = setInterval(() => {
+      mazeCountdown--;
+      mazeTimerHudEl.textContent = `⏱ ${mazeCountdown}s`;
+      if (mazeCountdown <= 0) {
+        clearInterval(mazeTimerInt); mazeTimerInt = null;
+        mazeEndGame(false);
+      }
+    }, 1000);
+  });
+
+  if (IS_DEBUG) dbgMazeBtn.style.display = 'block';
+  dbgMazeBtn.addEventListener('click', () => {
+    pendingPrize = { id: 'btc', label: '1 BITCOIN!', icon: '₿', flavor: '₿ ONE FULL BITCOIN! (~$90,000!) LEGENDARY!', isJackpot: true, isFree: false, ticketBonus: 0 };
+    startMazeMinigame(pendingPrize);
+  });
+
+  // ═══════════════════════════════════════
+  // SNIPER MINIGAME
+  // ═══════════════════════════════════════
+  const sniperPopup       = document.getElementById('sniper-popup');
+  const sniperBox         = document.getElementById('sniper-box');
+  const sniperBuilding    = document.getElementById('sniper-building');
+  const sniperTarget      = document.getElementById('sniper-target');
+  const sniperCanvas      = document.getElementById('sniper-canvas');
+  const sniperHitsEl      = document.getElementById('sniper-hits');
+  const sniperTimerHud    = document.getElementById('sniper-timer-hud');
+  const sniperMissesEl    = document.getElementById('sniper-misses');
+  const sniperIntro       = document.getElementById('sniper-intro');
+  const sniperIntroBtn    = document.getElementById('sniper-intro-btn');
+  const dbgSniperBtn      = document.getElementById('dbg-sniper');
+
+  // Window positions in dusty.png original pixels (1015×1009 natural size)
+  const SNIPER_WINDOWS = [];
+  [[240,272],[240,384],[240,503],[240,620],[240,743],
+   [472,272],[472,384],[472,503],[472,620],[472,743],
+   [708,272],[708,384],[708,503],[708,620],[708,743]
+  ].forEach(([wy, wx]) => SNIPER_WINDOWS.push({ x: wx, y: wy }));
+
+  const SNIPER_IMG_W    = 1015;  // dusty.png natural width
+  const SNIPER_IMG_H    = 1009;  // dusty.png natural height
+  const SNIPER_SCOPE_R  = 65;    // scope circle radius (display px)
+  const SNIPER_SCOPE_ZOOM = 2;
+  const SNIPER_HIT_R    = 24;    // hit detection radius (display px)
+  const SNIPER_TARGET_PX = 19;   // rendered target size (display px)
+
+  let sniperPrize       = null;
+  let sniperHitCount    = 0, sniperMissCount = 0;
+  let sniperMx = 480,  sniperMy = 270;
+  let sniperTargetPos   = null;  // { dx, dy } in display coords
+  let sniperTargetTimer = null;
+  let sniperCountdown   = 5;
+  let sniperCtx         = null;
+  let sniperAnimFrame   = null;
+  let sniperActive      = false;
+  let sniperHitFlash    = 0;
+  let sniperHitFlashPos = null;
+
+  function sniperImgRect() {
+    const cw = sniperBox.offsetWidth  || 600;
+    const ch = sniperBox.offsetHeight || 420;
+    const scale = Math.min(cw / SNIPER_IMG_W, ch / SNIPER_IMG_H);
+    return { ox: (cw - SNIPER_IMG_W * scale) / 2, oy: (ch - SNIPER_IMG_H * scale) / 2, scale };
+  }
+
+  function sniperToDisplay(wx, wy) {
+    const { ox, oy, scale } = sniperImgRect();
+    return { dx: ox + wx * scale, dy: oy + wy * scale };
+  }
+
+  function sniperDraw() {
+    if (!sniperCtx) return;
+    const W = sniperCanvas.width, H = sniperCanvas.height;
+    sniperCtx.clearRect(0, 0, W, H);
+    // Dark vignette with a zoomed scope view rendered on top
+    sniperCtx.fillStyle = 'rgba(0,0,0,0.92)';
+    sniperCtx.fillRect(0, 0, W, H);
+    const { ox, oy, scale } = sniperImgRect();
+    const scopeD = SNIPER_SCOPE_R * 2;
+    const srcW = scopeD / (scale * SNIPER_SCOPE_ZOOM);
+    const srcH = scopeD / (scale * SNIPER_SCOPE_ZOOM);
+    const srcX = Math.max(0, Math.min(SNIPER_IMG_W - srcW, (sniperMx - ox) / scale - srcW / 2));
+    const srcY = Math.max(0, Math.min(SNIPER_IMG_H - srcH, (sniperMy - oy) / scale - srcH / 2));
+    sniperCtx.save();
+    sniperCtx.beginPath();
+    sniperCtx.arc(sniperMx, sniperMy, SNIPER_SCOPE_R, 0, Math.PI * 2);
+    sniperCtx.clip();
+    sniperCtx.fillStyle = '#000';
+    sniperCtx.fillRect(sniperMx - SNIPER_SCOPE_R, sniperMy - SNIPER_SCOPE_R, scopeD, scopeD);
+    sniperCtx.drawImage(sniperBuilding, srcX, srcY, srcW, srcH, sniperMx - SNIPER_SCOPE_R, sniperMy - SNIPER_SCOPE_R, scopeD, scopeD);
+    if (sniperTargetPos && sniperTarget.style.display !== 'none') {
+      const zoomedTargetSize = SNIPER_TARGET_PX * SNIPER_SCOPE_ZOOM;
+      const targetCx = sniperMx + (sniperTargetPos.dx - sniperMx) * SNIPER_SCOPE_ZOOM;
+      const targetCy = sniperMy + (sniperTargetPos.dy - sniperMy) * SNIPER_SCOPE_ZOOM;
+      sniperCtx.drawImage(sniperTarget, targetCx - zoomedTargetSize / 2, targetCy - zoomedTargetSize / 2, zoomedTargetSize, zoomedTargetSize);
+    }
+    sniperCtx.restore();
+    // Outer scope ring
+    sniperCtx.strokeStyle = 'rgba(0,255,68,0.75)'; sniperCtx.lineWidth = 1.5;
+    sniperCtx.beginPath(); sniperCtx.arc(sniperMx, sniperMy, SNIPER_SCOPE_R, 0, Math.PI * 2); sniperCtx.stroke();
+    // Inner ring
+    sniperCtx.strokeStyle = 'rgba(0,255,68,0.3)'; sniperCtx.lineWidth = 1;
+    sniperCtx.beginPath(); sniperCtx.arc(sniperMx, sniperMy, SNIPER_SCOPE_R * 0.22, 0, Math.PI * 2); sniperCtx.stroke();
+    // Crosshair with center gap
+    const GAP = 8;
+    sniperCtx.strokeStyle = 'rgba(255,30,30,0.9)'; sniperCtx.lineWidth = 1;
+    sniperCtx.beginPath(); sniperCtx.moveTo(sniperMx - SNIPER_SCOPE_R, sniperMy); sniperCtx.lineTo(sniperMx - GAP, sniperMy); sniperCtx.stroke();
+    sniperCtx.beginPath(); sniperCtx.moveTo(sniperMx + GAP, sniperMy); sniperCtx.lineTo(sniperMx + SNIPER_SCOPE_R, sniperMy); sniperCtx.stroke();
+    sniperCtx.beginPath(); sniperCtx.moveTo(sniperMx, sniperMy - SNIPER_SCOPE_R); sniperCtx.lineTo(sniperMx, sniperMy - GAP); sniperCtx.stroke();
+    sniperCtx.beginPath(); sniperCtx.moveTo(sniperMx, sniperMy + GAP); sniperCtx.lineTo(sniperMx, sniperMy + SNIPER_SCOPE_R); sniperCtx.stroke();
+    // Center dot
+    sniperCtx.fillStyle = 'rgba(255,30,30,0.9)';
+    sniperCtx.beginPath(); sniperCtx.arc(sniperMx, sniperMy, 2, 0, Math.PI * 2); sniperCtx.fill();
+    // Hit flash
+    if (sniperHitFlash > 0 && sniperHitFlashPos) {
+      sniperCtx.strokeStyle = `rgba(255,255,0,${sniperHitFlash / 12})`;
+      sniperCtx.lineWidth = 3;
+      sniperCtx.beginPath(); sniperCtx.arc(sniperHitFlashPos.dx, sniperHitFlashPos.dy, 22, 0, Math.PI * 2); sniperCtx.stroke();
+      sniperHitFlash--;
+    }
+    sniperAnimFrame = requestAnimationFrame(sniperDraw);
+  }
+
+  function sniperPickTarget() {
+    if (!sniperActive) return;
+    const w = SNIPER_WINDOWS[Math.floor(Math.random() * SNIPER_WINDOWS.length)];
+    sniperTargetPos = sniperToDisplay(w.x, w.y);
+    sniperTarget.style.left   = sniperTargetPos.dx + 'px';
+    sniperTarget.style.top    = sniperTargetPos.dy + 'px';
+    sniperTarget.style.width  = SNIPER_TARGET_PX + 'px';
+    sniperTarget.style.height = SNIPER_TARGET_PX + 'px';
+    sniperTarget.style.display = 'block';
+    sniperCountdown = 5;
+    sniperTimerHud.textContent = '⏱ 5s';
+    if (sniperTargetTimer) clearInterval(sniperTargetTimer);
+    sniperTargetTimer = setInterval(() => {
+      sniperCountdown--;
+      sniperTimerHud.textContent = `⏱ ${sniperCountdown}s`;
+      if (sniperCountdown <= 0) {
+        clearInterval(sniperTargetTimer); sniperTargetTimer = null;
+        sniperTarget.style.display = 'none';
+        sniperMissCount++;
+        sniperMissesEl.textContent = `❌ ${sniperMissCount}/1`;
+        if (sniperMissCount > 1) { sniperEndGame(false); }
+        else { setTimeout(() => sniperPickTarget(), 700); }
+      }
+    }, 1000);
+  }
+
+  function sniperEndGame(won) {
+    sniperActive = false;
+    clearInterval(sniperTargetTimer); sniperTargetTimer = null;
+    sniperTarget.style.display = 'none';
+    if (sniperAnimFrame) { cancelAnimationFrame(sniperAnimFrame); sniperAnimFrame = null; }
+    if (sniperCtx) sniperCtx.clearRect(0, 0, sniperCanvas.width, sniperCanvas.height);
+    sniperPopup.classList.remove('show');
+    resumeMinigame();
+    if (won) {
+      pendingPrize = sniperPrize; sniperPrize = null;
+      fireConfetti(160); playJackpot();
+      _renderWinPopup(pendingPrize);
+    } else {
+      playDenied();
+      sniperPrize = null; pendingPrize = null;
+      minigameFailTitle.textContent = '💀 YOU MISSED!';
+      minigameFailMsg.textContent   = 'You ran out of chances. The AWP Dragon Lore is gone!';
+      minigameFailPopupEl.classList.add('show');
+    }
+  }
+
+  function startSniperMinigame(prize) {
+    sniperPrize = prize; sniperHitCount = 0; sniperMissCount = 0;
+    sniperHitsEl.textContent   = '🎯 0/5';
+    sniperMissesEl.textContent = '❌ 0/1';
+    sniperTimerHud.textContent = '⏱ 5s';
+    sniperTarget.style.display = 'none';
+    sniperActive = false;  // held until intro dismissed
+    sniperIntro.classList.add('show');
+    sniperPopup.classList.add('show');
+    pauseMinigame();
+    const cw = 600, ch = 420;
+    sniperCanvas.width  = cw;
+    sniperCanvas.height = ch;
+    sniperCtx = sniperCanvas.getContext('2d');
+    sniperMx  = cw / 2;
+    sniperMy  = ch / 2;
+    if (sniperAnimFrame) cancelAnimationFrame(sniperAnimFrame);
+    sniperDraw();
+    // game starts when intro btn clicked
+  }
+
+  sniperIntroBtn.addEventListener('click', () => {
+    sniperIntro.classList.remove('show');
+    sniperActive = true;
+    if (!sniperAnimFrame) { sniperAnimFrame = requestAnimationFrame(sniperDraw); }
+    sniperPickTarget();
+  });
+
+  function _sniperHandleMove(clientX, clientY) {
+    const r = sniperCanvas.getBoundingClientRect();
+    sniperMx = clientX - r.left;
+    sniperMy = clientY - r.top;
+  }
+
+  function _sniperHandleFire() {
+    if (!sniperActive || !sniperTargetPos) return;
+    playAssetSound('awpShot');
+    const dx = sniperMx - sniperTargetPos.dx;
+    const dy = sniperMy - sniperTargetPos.dy;
+    if (Math.sqrt(dx * dx + dy * dy) <= SNIPER_HIT_R) {
+      clearInterval(sniperTargetTimer); sniperTargetTimer = null;
+      sniperTarget.style.display = 'none';
+      sniperHitFlash = 12; sniperHitFlashPos = { ...sniperTargetPos };
+      sniperHitCount++;
+      sniperHitsEl.textContent = `🎯 ${sniperHitCount}/5`;
+      if (sniperHitCount >= 5) { setTimeout(() => sniperEndGame(true), 300); }
+      else { setTimeout(() => sniperPickTarget(), 500); }
+    }
+  }
+
+  sniperCanvas.addEventListener('mousemove', (e) => _sniperHandleMove(e.clientX, e.clientY));
+  sniperCanvas.addEventListener('click',     () => _sniperHandleFire());
+  sniperCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); _sniperHandleMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+  sniperCanvas.addEventListener('touchend',  (e) => { e.preventDefault(); _sniperHandleFire(); }, { passive: false });
+
+  if (IS_DEBUG) dbgSniperBtn.style.display = 'block';
+  dbgSniperBtn.addEventListener('click', () => {
+    pendingPrize = { id: 'awp_dl', label: 'AWP Dragon Lore', icon: '🔫', flavor: 'THE AWP DRAGON LORE! CS:GO LEGENDARY SKIN!', imgIcon: 'assets/awp-dl.png', isJackpot: true, isFree: false, ticketBonus: 0 };
+    startSniperMinigame(pendingPrize);
+  });
+
+  // ═══════════════════════════════════════
+  // UPGRADE POPUP
+  // ═══════════════════════════════════════
+  const upgradePopup    = document.getElementById('upgrade-popup');
+  const upgradeBg       = document.getElementById('upgrade-bg');
+  const upgradeBox      = document.getElementById('upgrade-box');
+  const upgradeTierIcon = document.getElementById('upgrade-tier-icon');
+  const upgradeTitle    = document.getElementById('upgrade-title');
+  const upgradeSub      = document.getElementById('upgrade-subtitle');
+  const upgradeOk       = document.getElementById('upgrade-ok');
+
+  function showUpgradePopup() {
+    const nextIdx = currentTierIndex + 1;
+    if (nextIdx >= TIERS.length) {
+      pendingPrize = null;
+      if (ACTIVE_GAME !== 'scratch') spinning = false;
+      window.top.postMessage({ type: 'play' }, '*');
+      updateActionBtn(); return;
+    }
+    const cfg = UPGRADE_CONFIGS[nextIdx];
+    upgradeTierIcon.textContent = cfg.icon;
+    upgradeTitle.textContent    = cfg.title;
+    upgradeSub.innerHTML        = cfg.subtitle;
+    upgradeOk.textContent       = cfg.btnText;
+    upgradeBox.style.cssText    = `background:${cfg.boxBg}; border:3px solid ${cfg.border}; box-shadow:0 0 40px ${cfg.glow}, 0 0 80px ${cfg.glow};`;
+    upgradeTitle.style.color    = cfg.titleColor;
+    upgradeSub.style.color      = cfg.subColor;
+    upgradeOk.style.cssText     = `background:${cfg.btnBg}; color:${cfg.btnColor}; font-family:'Bungee',sans-serif; font-size:15px; padding:12px 36px; border:none; border-radius:10px; cursor:pointer;`;
+    playTierUpgrade(); fireConfetti(300);
+    upgradePopup.classList.add('show');
+    requestAnimationFrame(() => {
+      upgradeBg.classList.add('dark');
+      requestAnimationFrame(() => upgradeBox.classList.add('visible'));
+    });
+  }
+
+  upgradeOk.addEventListener('click', () => {
+    upgradeBox.classList.remove('visible'); upgradeBg.classList.remove('dark');
+    setTimeout(() => {
+      upgradePopup.classList.remove('show');
+      applyTier(currentTierIndex + 1);
+      pendingPrize = null;
+      if (ACTIVE_GAME !== 'scratch') spinning = false;
+      // Check drain/bonus state — upgrade is treated like collecting a non-ticket prize
+      if (tickets <= 0 && _drainMode && !_bonusRound) {
+        setTimeout(() => document.getElementById('out-of-tickets-popup').classList.add('show'), 350);
+      } else if (tickets <= 0 && _bonusRound) {
+        setTimeout(() => setTickets(3), 350);
+      } else {
+        window.top.postMessage({ type: 'play' }, '*');
+        updateActionBtn();
+      }
+    }, 500);
+  });
+
+  // ═══════════════════════════════════════
+  // APPLY TIER
+  // ═══════════════════════════════════════
+  function applyTier(index) {
+    currentTierIndex = index;
+    const tier = TIERS[index];
+    window.top.postMessage({ type: 'tierChange', tier: index }, '*');
+
+    document.getElementById('overlay-container').style.background = tier.bg;
+
+    const titleEl = document.getElementById('casino-title');
+    titleEl.textContent = tier.name; titleEl.style.color = tier.titleColor;
+    titleEl.style.animation = 'none'; void titleEl.offsetWidth; titleEl.style.animation = '';
+
+    document.getElementById('prizes-panel').style.borderColor   = tier.panelBorder;
+    document.getElementById('prizes-panel').style.boxShadow     = `0 0 12px ${tier.panelGlow}`;
+    document.getElementById('ticket-panel').style.borderColor   = tier.panelBorder;
+    document.getElementById('ticket-panel').style.boxShadow     = `0 0 12px ${tier.panelGlow}`;
+    document.getElementById('winners-ticker').style.borderColor  = tier.panelBorder;
+    document.getElementById('winners-ticker').style.boxShadow    = `0 0 12px ${tier.panelGlow}`;
+    document.getElementById('prizes-panel').querySelector('h3').style.color = tier.titleColor;
+    document.getElementById('ticket-panel').querySelector('h3').textContent  = tier.ticketLabel;
+    document.getElementById('ticket-panel').querySelector('h3').style.color  = tier.titleColor;
+    document.getElementById('ticket-count').style.color        = tier.titleColor;
+    document.getElementById('ticket-count').style.textShadow   = `0 0 12px ${tier.panelBorder}, 0 0 24px ${tier.panelBorder}`;
+    document.getElementById('ticket-icon').textContent          = tier.ticketIcon;
+
+    // Rebuild bulb strips
+    ['top','bottom'].forEach(pos => {
+      const strip = document.getElementById('light-strip-' + pos);
+      if (!strip) return;
+      strip.innerHTML = '';
+      for (let i = 0; i < 40; i++) {
+        const b = document.createElement('div'); b.className = 'bulb';
+        const c = tier.bulbColors[i % tier.bulbColors.length];
+        b.style.color = c; b.style.background = c; b.style.animationDelay = (i * 0.08) + 's';
+        strip.appendChild(b);
+      }
+    });
+
+    // Banner
+    document.getElementById('banner').style.background = tier.bg;
+    document.getElementById('banner-title').style.color = tier.titleColor;
+    const ruleGrad = 'linear-gradient(90deg, transparent, ' + tier.panelBorder + ', transparent)';
+    document.querySelectorAll('.banner-rule').forEach(r => r.style.background = ruleGrad);
+
+    // Win + Dog popup theming
+    const popupBg   = ['linear-gradient(145deg, #1a0033, #0d001a)', 'linear-gradient(145deg, #2a1400, #1a0c00)', 'linear-gradient(145deg, #001828, #000d18)'][index];
+    const popupGlow = ['0 0 40px #ffd700, 0 0 80px #ff4400aa', '0 0 40px #ffe066, 0 0 80px #ff880099', '0 0 40px #00ccff, 0 0 80px #0088ffaa'][index];
+    const wb = document.getElementById('win-box'), db = document.getElementById('dog-box');
+    if (wb) { wb.style.background = popupBg; wb.style.borderColor = tier.panelBorder; wb.style.boxShadow = popupGlow; }
+    if (db) { db.style.background = popupBg; db.style.borderColor = tier.panelBorder; db.style.boxShadow = popupGlow; }
+    if (winTitle) winTitle.style.color = tier.titleColor;
+
+    // ── Wheel-specific ──────────────────────
+    if (ACTIVE_GAME === 'wheel') {
+      currentAngle = 0;
+      document.getElementById('wheel-canvas').style.filter = tier.wheelGlow || '';
+      const ptr = document.getElementById('wheel-pointer');
+      if (ptr) { ptr.style.borderTopColor = tier.pointerColor; ptr.style.filter = `drop-shadow(0 0 6px ${tier.pointerColor})`; }
+      drawWheel(currentAngle);
+    }
+
+    // ── Slot-specific ────────────────────────
+    if (ACTIVE_GAME === 'slot') {
+      const marquee = document.getElementById('slot-marquee');
+      if (marquee) {
+        marquee.textContent = tier.marquee; marquee.style.borderColor = tier.cabinetBorder;
+        marquee.style.color = tier.cabinetBorder; marquee.style.textShadow = `0 0 8px ${tier.cabinetBorder}`;
+        marquee.style.background = tier.cabinetBg;
+      }
+      const slotBottom = document.getElementById('slot-bottom');
+      if (slotBottom) { slotBottom.style.borderColor = tier.cabinetBorder; slotBottom.style.background = tier.cabinetBg; }
+      if (spinBtnEl) { spinBtnEl.style.borderColor = tier.cabinetBorder; spinBtnEl.style.boxShadow = `0 0 14px ${tier.cabinetBorder}, 0 0 28px ${tier.cabinetBorder}`; }
+      const reelsWindow = document.getElementById('reels-window');
+      if (reelsWindow) { reelsWindow.style.borderColor = tier.cabinetBorder; reelsWindow.style.boxShadow = `inset 0 0 20px rgba(0,0,0,0.8), 0 0 12px ${tier.panelGlow}`; }
+      [0,1,2].forEach(i => { const r = document.getElementById('reel-' + i); if (r) r.style.borderColor = tier.cabinetBorder; });
+      const wl = document.getElementById('win-line'); if (wl) wl.style.borderColor = tier.cabinetBorder + 'cc';
+      rebuildReels();
+    }
+
+    // ── Scratch-specific ─────────────────────
+    if (ACTIVE_GAME === 'scratch') {
+      const ch = document.getElementById('card-header');
+      if (ch) {
+        ch.textContent = tier.headerText; ch.style.background = tier.cardBg;
+        ch.style.borderColor = tier.cardBorder; ch.style.color = tier.titleColor;
+        ch.style.textShadow = `0 0 8px ${tier.cardBorder}`;
+      }
+      const cf = document.getElementById('card-footer');
+      if (cf) { cf.style.background = tier.cardBg; cf.style.borderColor = tier.cardBorder; }
+      const cb = document.getElementById('card-body');
+      if (cb) { cb.style.borderColor = tier.cardBorder; cb.style.boxShadow = `inset 0 0 20px rgba(0,0,0,0.8), 0 0 12px ${tier.panelGlow}`; }
+      if (newCardBtnEl) { newCardBtnEl.style.borderColor = tier.cardBorder; newCardBtnEl.style.boxShadow = `0 0 12px ${tier.cardBorder}, 0 0 24px ${tier.cardBorder}`; }
+      // Loss popup theming
+      const lb = document.getElementById('loss-box');
+      if (lb) { lb.style.background = popupBg; lb.style.borderColor = tier.panelBorder; lb.style.boxShadow = popupGlow; }
+      const lt = document.getElementById('loss-title'); if (lt) { lt.style.color = tier.titleColor; lt.style.textShadow = `0 0 12px ${tier.panelBorder}`; }
+      const lm = document.getElementById('loss-msg');   if (lm) lm.style.color = tier.titleColor;
+      const lossOkBg = ['linear-gradient(135deg, #cc8800, #664400)', 'linear-gradient(135deg, #cc9900, #553300)', 'linear-gradient(135deg, #0099cc, #003366)'][index];
+      const lo = document.getElementById('loss-ok'); if (lo) { lo.style.background = lossOkBg; lo.style.boxShadow = `0 0 10px ${tier.panelBorder}88`; }
+      // Deal first card for this tier
+      scratchCount++;
+      const winPrizeIdx = pickWinningPrize();
+      if (winPrizeIdx !== -1) winCount++;
+      gridPrizes = generateGrid(winPrizeIdx);
+      cardCount_total++;
+      document.getElementById('card-number').textContent = 'CARD #' + cardCount_total;
+      buildCard();
+    }
+  }
+
+  // ═══════════════════════════════════════
+  // AD LIFECYCLE
+  // ═══════════════════════════════════════
+  applyTier(0);
+
+  // ─────────────────────────────────────────
+  // BUILT-IN VIDEO AD (random tab only)
+  // ─────────────────────────────────────────
+  let _ilcAdDone = false;
+
+  if (IS_RANDOM_TAB) {
+    const adOverlay   = document.getElementById('ad-video-overlay');
+    const adVideo     = document.getElementById('ad-video');
+    const adUnmuteBtn = document.getElementById('ad-unmute-btn');
+    adOverlay.style.display = 'block';
+
+    // Manual unmute button (fallback if autoplay policy blocks unmuted playback)
+    adUnmuteBtn.addEventListener('click', function() {
+      adVideo.muted = false;
+      adUnmuteBtn.style.display = 'none';
+    });
+
+    adVideo.addEventListener('ended', function() {
+      _ilcAdDone = true;
+      adOverlay.style.display = 'none';
+      // Keep shell background video silenced for the rest of the game session
+      startGame();
+    });
+
+    // Start muted immediately — handles direct-open / dev preview without shell
+    adVideo.play().catch(function() {});
+  }
+
+  window.addEventListener('message', (event) => {
+    if (!event.data || !event.data.type) return;
+
+    if (event.data.type === 'adStarted') {
+      if (IS_RANDOM_TAB && !_ilcAdDone) {
+        const adVideo     = document.getElementById('ad-video');
+        const adUnmuteBtn = document.getElementById('ad-unmute-btn');
+
+        // Silence & pause the shell's background video — our ILC-AD is the real ad
+        window.top.postMessage({ type: 'setVolume', value: 0 }, '*');
+        window.top.postMessage({ type: 'pause' }, '*');
+
+        // User just clicked Play — try to unmute and (re)play with sound
+        adVideo.muted = false;
+        adUnmuteBtn.style.display = 'none';
+        adVideo.play().catch(function() {
+          // Browser blocked unmuted play — fall back to muted, show unmute button
+          adVideo.muted = true;
+          adUnmuteBtn.style.display = '';
+          adVideo.play().catch(function() {});
+        });
+        return; // startGame() is called by the video's 'ended' listener above
+      }
+      const adOverlay = document.getElementById('ad-video-overlay');
+      if (adOverlay) adOverlay.style.display = 'none';
+      // Silence shell background video for the entire game session
+      window.top.postMessage({ type: 'setVolume', value: 0 }, '*');
+      window.top.postMessage({ type: 'pause' }, '*');
+      startGame();
+    }
+
+    if (event.data.type === 'adFinished') {
+      // Ignore — our game defines its own session lifecycle via 'success'
+    }
+  });
+
+})(window, document);
+</script>
 </body>
 </html>
