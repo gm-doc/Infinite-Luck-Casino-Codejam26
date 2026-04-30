@@ -1,5 +1,30 @@
 # Infinite Luck Casino - Kitboga Code Jam 2026 Entry
 
+## Table of Contents
+- [Core Skip Mechanics](#core-skip-mechanics)
+- [Ad Elements Breakdown](#ad-elements-breakdown)
+  - [Video Ad](#video-ad)
+  - [Prize Wheel](#prize-wheel)
+  - [Slot Machine](#slot-machine)
+  - [Scratch Cards](#scratch-cards)
+  - [Prize List](#prize-list)
+  - [Ticket Counter](#ticket-counter)
+  - [Live Winners](#live-winners)
+  - [Idling Protection](#idling-protection)
+  - [Dog](#dog)
+  - [AWP Dragon Lore Skin](#awp-dragon-lore-skin)
+  - [Bitcoin](#bitcoin)
+  - [Abandon Prizes Confirmation](#abandon-prizes-confirmation)
+  - [Out of Tickets Popup](#out-of-tickets-popup)
+- [Reward Tiers](#reward-tiers)
+  - [Tier 1 — Standard](#tier-1--standard-️)
+  - [Tier 2 — Gold](#tier-2--gold-)
+  - [Tier 3 — Diamond](#tier-3--diamond-)
+- [Easter Eggs](#easter-eggs)
+- [Additional Arguments](#additional-arguments)
+
+---
+
 This GitHub repository contains a contest entry version of the Infinite Luck Casino mini game ads. The minigame is designed to waste as much of your time as possible while forcing you to play the casino themed games. Every minigame is a different style casino lottery with multiple rewards and 3 reward tiers (standard, gold, diamond). The rewards and tiers are the same between the games. The UI contains multiple rigged mechanics that will make it impossible to not engage or skip the game despite what the  rewards might promise.
 
 ## Core Skip Mechanics
