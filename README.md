@@ -7,7 +7,7 @@ The ad was designed to resemble the annoying mobile game ads that let you play a
 - Long initial skip ad time (360s default)
 - Rewards that reduce the timer are only bait (you will win -30s and -60s during a few initial spins but after that its impossible to get any more time reduction prizes)
 - Ticket Drain Mode - Once the skip ad timer runs out the ticket drain mode will force you to use all remaining tickets (it will be possible but only in this mode - this is endgame) 
-- Collect Prizes! - States that you can only claim your prizes when you run out of tickets (but you never will the drain mode unlocks the skip ad but it will give you 3 more tickets)  
+- Collect Prizes! - The game tells you that prizes can only be claimed once your tickets run out. You will not run out — ticket prizes (+5 and +10) are completely suppressed from the prize pool while you have more than 3 tickets, but the moment your supply drops to 3 or below they become available again and will refill you. In drain mode ticket prizes are suppressed entirely regardless of count, making it the only state where running out is actually possible.
 - Idle check - The game checks if you're idling and will penalize you with more time added to skip timer
 - Minigames - Some prizes (dog, awp, btc) have a special minigame you have to play before collecting them. Those minigames pause the skip ad timer for the duration
 - Safety net - The game has a built in safety net so it can't take forever. If the gameplay time exceeds 10 minutes the skip ad button will become available unconditionally
@@ -61,6 +61,79 @@ To get the skin you will have to first prove your skills in a sniper minigame. A
 <img width="383" height="355" alt="image" src="https://github.com/user-attachments/assets/c2bb898c-ee87-4b49-bfe2-baf9c7672d5c" />
 To get the Bitcoin you'll have to help the Kraken get thorugh the maze first - hold and drag him with your finger/mouse to reach the finish line
 
+
+### Abandon Prizes Confirmation
+When the skip timer runs out and the skip button turns gold, clicking it does not skip the ad immediately. A full-screen confirmation popup appears warning you that you will lose all your collected prizes if you leave. You must explicitly confirm before the game enters drain mode. The popup is designed to look alarming enough to make you reconsider.
+
+Once in drain mode, clicking the skip button a second time shows a second "LAST WARNING" popup with even more dramatic styling before finally letting you proceed to drain your remaining tickets.
+
+### Out of Tickets Popup
+When drain mode reaches zero tickets the game does not end — it shows a dedicated popup with two choices:
+
+- **3 More Tickets** — Accepts more tickets and starts the bonus round. In the bonus round tickets refill automatically whenever they reach zero, making it impossible to ever truly run out again. The skip button still requires an "ABANDON PRIZES?" confirmation.
+- **Skip Ad** — Ends the game immediately and posts the success signal to the shell.
+
+The popup is worded to make "3 More Tickets" feel like the obviously correct choice, since you have a growing list of prizes already collected and leaving would mean losing them.
+
+## Reward Tiers
+
+All three game modes (wheel, slots, scratch cards) share the same prize pool divided across three tiers. You advance to the next tier every 6 spins (or 6 wins for slots). Each tier upgrade triggers a full-screen animated celebration popup.
+
+### Tier 1 — Standard 🎟️
+
+| Prize | Icon | Notes |
+|-------|------|-------|
+| Golden Wheel | ⭐ | Tier upgrade to Tier 2 |
+| CrowPro 1 month | 🎮 | Fake antivirus subscription |
+| Free Ticket | 🎡 | Next spin is free |
+| $100 Casino Credits | 💵 | |
+| $200 Gift Card | 💳 | |
+| Windows RG License | 🪟 | Fake OS |
+| Seraph Secure 1 month | 🛡️ | Fake antivirus subscription |
+| 5 Tickets | 🎟️ | +5 tickets |
+| $200 Casino Credits | 💵 | |
+| $100 Gift Card | 💳 | |
+| **BIKE!** | 🚲 | Jackpot |
+| 10 Tickets | 🎟️ | +10 tickets |
+| -30s Skip Timer | ⏩ | Reduces skip timer (early spins only) |
+
+### Tier 2 — Gold 🌟
+
+| Prize | Icon | Notes |
+|-------|------|-------|
+| Diamond Wheel | 💎 | Tier upgrade to Tier 3 |
+| CrowPro 6 months | 🎮 | Fake antivirus subscription |
+| Free Ticket | 🎡 | Next spin is free |
+| **Dog** | 🐕 | Triggers dog minigame |
+| $200 Casino Credits | 💵 | |
+| $500 Gift Card | 💳 | |
+| CrowPro Lifetime | 👑 | Fake antivirus lifetime license |
+| WWWW Gold | 🏆 | Fake browser protection package |
+| 5 Gold Tickets | 🌟 | +5 tickets |
+| $500 Casino Credits | 💵 | |
+| **Mobility Scooter** | 🦼 | Jackpot |
+| 10 Gold Tickets | 🌟 | +10 tickets |
+| -60s Skip Timer | ⏩ | Reduces skip timer (early spins only) |
+
+### Tier 3 — Diamond 💎
+
+| Prize | Icon | Notes |
+|-------|------|-------|
+| **1 BITCOIN!** | ₿ | Jackpot — triggers maze minigame (~$90,000) |
+| Free Ticket | 🎡 | Next spin is free |
+| **Dog** | 🐕 | Triggers dog minigame |
+| $500 Casino Credits | 💵 | |
+| $1000 Gift Card | 💳 | |
+| **AWP Dragon Lore** | 🔫 | Jackpot — triggers sniper minigame |
+| ~~Skip Ad~~ | ⏭️ | Appears in the prize pool with a weight of 0 — impossible to win |
+| 5 Diamond Tickets | 💎 | +5 tickets |
+| $1000 Casino Credits | 💵 | |
+| $500 Gift Card | 💳 | |
+| **WIN A CAR!** | 🚗 | Jackpot |
+| 10 Diamond Tickets | 💎 | +10 tickets |
+| -60s Skip Timer | ⏩ | Reduces skip timer (early spins only) |
+
+> **Note on ticket prizes:** Ticket prizes (+5 and +10) are removed from the prize pool entirely while you have more than 3 tickets. The moment you drop to 3 or fewer they become available and will top you back up. In drain mode they are suppressed regardless of count — making drain mode the only state where running out is genuinely possible. The skip timer reduction prizes become increasingly rare in higher tiers and are only awarded during the first few spins. The "Skip Ad" prize visible on the Diamond Wheel has a spawn weight of 0 — it was never intended to be winnable.
 
 ## Easter Eggs
 The game has to hidden time control buttons that are in no way indicated by the UI:
