@@ -1,5 +1,4 @@
 # Infinite Luck Casino - Kitboga Code Jam 2026 Entry
-"Unskippable ad"
 
 This GitHub repository contains a contest entry version of the Infinite Luck Casino mini game ads. The minigame is designed to waste as much of your time as possible while forcing you to play the casino themed games. Every minigame is a different style casino lottery with multiple rewards and 3 reward tiers (standard, gold, diamond). The rewards and tiers are the same between the games. The UI contains multiple rigged mechanics that will make it impossible to not engage or skip the game despite what the  rewards might promise.
 
