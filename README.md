@@ -193,7 +193,8 @@ The game has two hidden time control buttons that are in no way indicated by the
   <img width="90" height="26" alt="image" src="https://github.com/user-attachments/assets/2f096839-1d9a-4f3f-aeb1-21a53edeac53" />
 </div>
 -clicking the speaker on the volume control adds 100s to your timer
-Both those time adjustments are done with minimal UI (do not display the standard time added/reduce indicators)
+
+> **Note:** Both those time adjustments are done with minimal UI (do not display the standard time added/reduce indicators)
 
 ## Additional Arguments
 The submission.html accepts additional arguments that allow you to force the game ui or add a debug menu overlay which allows you to play the reward specific minigames and displays the safety net countdown
