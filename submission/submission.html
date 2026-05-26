@@ -4,6 +4,17 @@
   <meta charset="utf-8">
   <title>Infinite Luck Casino</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+      (function () {
+        try {
+          var p = new URLSearchParams(window.location.search);
+          // Contest shell typically loads submission without a ?game= param.
+          if (window.top !== window.self && !p.has('game')) {
+            document.documentElement.classList.add('host-preroll-wait');
+          }
+        } catch (_) {}
+      })();
+    </script>
   <style>
     @font-face {
       font-family: 'Bungee';
@@ -34,6 +45,38 @@
       width: 960px; height: 540px;
       background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0618 60%, #000 100%);
     }
+      html.host-preroll-wait #overlay-container { visibility: hidden; }
+
+    /* Host-shell preroll controls (shown while waiting for ad to finish) */
+    #host-preroll-controls {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 250;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding: 14px;
+      pointer-events: none;
+    }
+    html.host-preroll-wait #host-preroll-controls { display: flex; }
+    #host-preroll-skip {
+      pointer-events: all;
+      width: 158px;
+      padding: 14px 8px;
+      background: rgba(0,0,0,0.7);
+      border: 2px solid #555;
+      font-size: 13px;
+      border-radius: 8px;
+      color: #aaa;
+      font-family: 'Bungee', sans-serif;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      text-align: center;
+      transition: background 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    #host-preroll-skip.ready { border-color: #ffd700; color: #ffd700; box-shadow: 0 0 12px #ffd70099; }
+    #host-preroll-skip.ready:hover { background: rgba(255,215,0,0.15); }
+    #host-preroll-skip-timer { display: block; font-size: 10px; color: #888; margin-top: 4px; font-family: sans-serif; }
 
     /* Animated background stars */
     .bg-star {
@@ -1160,6 +1203,10 @@
 
 </div>
 
+<div id="host-preroll-controls">
+  <button id="host-preroll-skip">⏭ Skip Ad<span id="host-preroll-skip-timer"></span></button>
+</div>
+
 <script>
 (function(window, document) {
 
@@ -1973,6 +2020,7 @@
 
   // Intro start button
   document.getElementById('intro-start-btn').addEventListener('click', function() {
+    if (_waitingForHostAd) return;
     startGame(true);
   });
 
@@ -2072,7 +2120,7 @@
     { name:'Joe', country:'USA', prize:'CrowPro Lifetime', game:'🎰 Slot Machine', quote:"I'll never have to worry about my crows again! CA-CAW!!!" },
     { name:'Daniel.', country:'USA', prize:'WWWW Gold', game:'🃏 Scratch Card', quote:"I just won the best hacking protection package! Amazing!" },
     { name:'Edna', country:'UK', prize:'Mobility Scooter', game:'🎰 Slot Machine', quote:"This is all I ever wanted and for FREE!" },
-    { name:'Satoshi', country:'China', prize:'1 Full Bitcoin', game:'🃏 Scratch Card', quote:"Who am I? A millionaire now!" },
+    { name:'Satoshi', country:'China', prize:'1 Full Bitcoin', game:'🃏 Scratch Card', quote:"How am I? A millionaire now!" },
   ];
 
   function playWinnerPing() {
@@ -3811,8 +3859,76 @@
   // BUILT-IN VIDEO AD (random tab only)
   // ─────────────────────────────────────────
   let _ilcAdDone = false;
+  const _embeddedInHost = (window.top !== window.self);
+  let _gameStarted = false;
+  let _waitingForHostAd = false;
+  const hostPrerollSkipBtn = document.getElementById('host-preroll-skip');
+  const hostPrerollSkipTimerEl = document.getElementById('host-preroll-skip-timer');
+  let _hostPrerollSkipCountdown = null;
+  let _hostPrerollSkipRemaining = 0;
 
-  if (IS_RANDOM_TAB) {
+  function clearHostPrerollSkipCountdown() {
+    if (_hostPrerollSkipCountdown) {
+      clearInterval(_hostPrerollSkipCountdown);
+      _hostPrerollSkipCountdown = null;
+    }
+  }
+
+  function startHostPrerollSkipCountdown() {
+    if (!hostPrerollSkipBtn) return;
+    clearHostPrerollSkipCountdown();
+    _hostPrerollSkipRemaining = 10;
+    hostPrerollSkipBtn.disabled = true;
+    hostPrerollSkipBtn.classList.remove('ready');
+    if (hostPrerollSkipTimerEl) hostPrerollSkipTimerEl.textContent = `Available in ${_hostPrerollSkipRemaining}s`;
+
+    _hostPrerollSkipCountdown = setInterval(function () {
+      _hostPrerollSkipRemaining--;
+      if (_hostPrerollSkipRemaining <= 0) {
+        clearHostPrerollSkipCountdown();
+        hostPrerollSkipBtn.disabled = false;
+        hostPrerollSkipBtn.classList.add('ready');
+        if (hostPrerollSkipTimerEl) hostPrerollSkipTimerEl.textContent = '';
+        return;
+      }
+      if (hostPrerollSkipTimerEl) hostPrerollSkipTimerEl.textContent = `Available in ${_hostPrerollSkipRemaining}s`;
+    }, 1000);
+  }
+
+  function ensureGameStarted() {
+    if (_gameStarted) return;
+    _gameStarted = true;
+    startGame();
+  }
+
+  function startAfterHostAd() {
+    if (!_waitingForHostAd) return;
+    _waitingForHostAd = false;
+    _ilcAdDone = true;
+    clearHostPrerollSkipCountdown();
+    if (hostPrerollSkipBtn) {
+      hostPrerollSkipBtn.disabled = false;
+      hostPrerollSkipBtn.classList.remove('ready');
+    }
+    if (hostPrerollSkipTimerEl) hostPrerollSkipTimerEl.textContent = '';
+      document.documentElement.classList.remove('host-preroll-wait');
+    // Stop host ad playback before transitioning into the game UI.
+    window.top.postMessage({ type: 'pause' }, '*');
+    const adVideo = document.getElementById('ad-video');
+    if (adVideo) {
+      try { adVideo.pause(); } catch (_) {}
+    }
+    const gameRoot = document.getElementById('overlay-container');
+    if (gameRoot) gameRoot.style.visibility = '';
+    skipBtn.style.display = 'none';
+    skipBtn.classList.remove('ready');
+    skipTimerEl.textContent = '';
+    const adOverlay = document.getElementById('ad-video-overlay');
+    if (adOverlay) adOverlay.style.display = 'none';
+    ensureGameStarted();
+  }
+
+  if (IS_RANDOM_TAB && !_embeddedInHost) {
     const adOverlay   = document.getElementById('ad-video-overlay');
     const adVideo     = document.getElementById('ad-video');
     const adUnmuteBtn = document.getElementById('ad-unmute-btn');
@@ -3827,8 +3943,7 @@
     adVideo.addEventListener('ended', function() {
       _ilcAdDone = true;
       adOverlay.style.display = 'none';
-      // Keep shell background video silenced for the rest of the game session
-      startGame();
+      ensureGameStarted();
     });
 
     // Start muted immediately — handles direct-open / dev preview without shell
@@ -3839,7 +3954,7 @@
     if (!event.data || !event.data.type) return;
 
     if (event.data.type === 'adStarted') {
-      if (IS_RANDOM_TAB && !_ilcAdDone) {
+      if (IS_RANDOM_TAB && !_embeddedInHost && !_ilcAdDone) {
         const adVideo     = document.getElementById('ad-video');
         const adUnmuteBtn = document.getElementById('ad-unmute-btn');
 
@@ -3858,18 +3973,46 @@
         });
         return; // startGame() is called by the video's 'ended' listener above
       }
+
+      // In shell/iframe mode, keep game hidden until host ad fully finishes.
+      if (_embeddedInHost) {
+        _waitingForHostAd = true;
+        document.documentElement.classList.add('host-preroll-wait');
+        startHostPrerollSkipCountdown();
+        skipBtn.style.display = 'none';
+        skipBtn.classList.remove('ready');
+        skipTimerEl.textContent = '';
+        const introPopup = document.getElementById('intro-popup');
+        if (introPopup) introPopup.classList.add('hidden');
+        const gameRoot = document.getElementById('overlay-container');
+        if (gameRoot) gameRoot.style.visibility = 'hidden';
+
+        const adOverlay = document.getElementById('ad-video-overlay');
+        const adVideo = document.getElementById('ad-video');
+        if (adOverlay) adOverlay.style.display = 'none';
+        if (adVideo) {
+          try { adVideo.pause(); } catch (_) {}
+        }
+        return;
+      }
+
       const adOverlay = document.getElementById('ad-video-overlay');
       if (adOverlay) adOverlay.style.display = 'none';
-      // Silence shell background video for the entire game session
-      window.top.postMessage({ type: 'setVolume', value: 0 }, '*');
-      window.top.postMessage({ type: 'pause' }, '*');
-      startGame();
+      ensureGameStarted();
     }
 
     if (event.data.type === 'adFinished') {
-      // Ignore — our game defines its own session lifecycle via 'success'
+      if (_embeddedInHost && _waitingForHostAd) startAfterHostAd();
     }
   });
+
+  if (hostPrerollSkipBtn) {
+    hostPrerollSkipBtn.addEventListener('click', function () {
+      if (!_embeddedInHost || !_waitingForHostAd) return;
+      if (hostPrerollSkipBtn.disabled) return;
+      startAfterHostAd();
+    });
+  }
 
 })(window, document);
 </script>
