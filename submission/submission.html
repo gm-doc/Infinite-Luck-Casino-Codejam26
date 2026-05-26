@@ -58,7 +58,7 @@
       padding: 14px;
       pointer-events: none;
     }
-    html.host-preroll-wait #host-preroll-controls { display: flex; }
+    html.host-preroll-wait.host-preroll-skip-enabled #host-preroll-controls { display: flex; }
     #host-preroll-skip {
       pointer-events: all;
       width: 158px;
@@ -1217,6 +1217,7 @@
   var _game = (_params.get('game') || 'random').toLowerCase();
   // Append ?debug to the URL to reveal test buttons and the safety-net countdown
   const IS_DEBUG = _params.has('debug');
+  const VIDEO_SKIP_TIMER = Math.max(0, parseInt(_params.get('videoSkipTimer') || '0', 10) || 0);
   const IS_RANDOM_TAB = (_game === 'random');
   if (_game === 'random') {
     var _games = ['wheel', 'slot', 'scratch'];
@@ -1224,6 +1225,8 @@
   }
   if (!['wheel', 'slot', 'scratch'].includes(_game)) _game = 'wheel';
   const ACTIVE_GAME = _game;
+  const _embeddedInHost = (window.top !== window.self);
+  let _blockHostPlay = false;
 
   // Show the correct game div, hide others
   ['wheel', 'slot', 'scratch'].forEach(function(g) {
@@ -1516,6 +1519,8 @@
   let wonJackpots      = {};
   let winCount         = 0;
   let skipGuaranteeSpin = Math.floor(Math.random() * 5);
+  let mustForceUpgrade = false;
+  const skipWonByTier = { base: false, gold: false };
   let _diamondNoJackpotRounds = 0;
 
   // Drain-mode state
@@ -1574,6 +1579,16 @@
     }
     const landedJackpot = prizeIndex !== -1 && prizes[prizeIndex] && prizes[prizeIndex].isJackpot;
     _diamondNoJackpotRounds = landedJackpot ? 0 : (_diamondNoJackpotRounds + 1);
+  }
+
+  function hasTierSkipPrizeBeenWon() {
+    const tierId = currentTier().id;
+    return !!skipWonByTier[tierId];
+  }
+
+  function markTierSkipPrizeWon() {
+    const tierId = currentTier().id;
+    if (tierId in skipWonByTier) skipWonByTier[tierId] = true;
   }
 
   // Image cache — preload prize PNGs
@@ -1952,7 +1967,7 @@
 
   lpConfirmBtn.addEventListener('click', () => {
     losePrizesPopup.classList.remove('show');
-    window.top.postMessage({ type: 'success' }, '*');
+    postToHost({ type: 'success' }, '*');
   });
 
   skipBtn.addEventListener('click', () => {
@@ -1972,7 +1987,7 @@
       skipWarnPopup.classList.add('show');
     } else {
       // No tickets left in drain mode (oot popup should be showing, fallback)
-      window.top.postMessage({ type: 'success' }, '*');
+      postToHost({ type: 'success' }, '*');
     }
   });
   skipWarnOk.addEventListener('click', () => skipWarnPopup.classList.remove('show'));
@@ -2120,7 +2135,7 @@
     { name:'Joe', country:'USA', prize:'CrowPro Lifetime', game:'🎰 Slot Machine', quote:"I'll never have to worry about my crows again! CA-CAW!!!" },
     { name:'Daniel.', country:'USA', prize:'WWWW Gold', game:'🃏 Scratch Card', quote:"I just won the best hacking protection package! Amazing!" },
     { name:'Edna', country:'UK', prize:'Mobility Scooter', game:'🎰 Slot Machine', quote:"This is all I ever wanted and for FREE!" },
-    { name:'Satoshi', country:'China', prize:'1 Full Bitcoin', game:'🃏 Scratch Card', quote:"How am I? A millionaire now!" },
+    { name:'Satoshi', country:'China', prize:'1 Full Bitcoin', game:'🃏 Scratch Card', quote:"Who am I? A millionaire now!" },
   ];
 
   function playWinnerPing() {
@@ -2354,10 +2369,18 @@
     const ticketPrizeIndices = prizes.reduce((acc, p, i) => { if (p.ticketBonus > 0) acc.push(i); return acc; }, []);
     const drainActive = _drainMode && !_bonusRound;
     const upgradeIndex = prizes.findIndex(p => p.isUpgrade);
-    const canForceSkipReduction = !skipUnlocked && skipCooldown > 0;
+    const canForceSkipReduction = !skipUnlocked && skipCooldown > 0 && !hasTierSkipPrizeBeenWon();
     function randomTicketPrize() { return ticketPrizeIndices[Math.floor(Math.random() * ticketPrizeIndices.length)]; }
 
+    if (mustForceUpgrade && upgradeIndex !== -1) {
+      mustForceUpgrade = false;
+      return upgradeIndex;
+    }
+
+    const cyclePos = spinCount % 6;
+
     if (!drainActive) {
+      if (upgradeIndex !== -1 && cyclePos === 5) mustForceUpgrade = true;
       if (tickets <= 1)                            return randomTicketPrize();
       if (tickets === 2 && Math.random() < 0.75)  return randomTicketPrize();
       if (tickets === 3 && Math.random() < 0.50)  return randomTicketPrize();
@@ -2366,8 +2389,8 @@
     const forcedDiamondJackpot = maybeForceDiamondJackpot(prizes);
     if (forcedDiamondJackpot !== -1) return forcedDiamondJackpot;
 
-    const cyclePos = spinCount % 6;
     if (upgradeIndex !== -1 && cyclePos === 5) {
+      mustForceUpgrade = false;
       skipGuaranteeSpin = canForceSkipReduction ? Math.floor(Math.random() * 5) : -1;
       return upgradeIndex;
     }
@@ -2419,7 +2442,7 @@
     spinning = true;
     updateSpinBtn();
     playSpinStart();
-    window.top.postMessage({ type: 'pause' }, '*');
+    postToHost({ type: 'pause' }, '*');
     spinCount++;
     const prizeIndex = _pickPrizeWheel();
     trackDiamondRoundPlayed(currentTier().prizes, prizeIndex);
@@ -2524,10 +2547,18 @@
     const ticketPrizeIndices = prizes.reduce((acc, p, i) => { if (p.ticketBonus > 0) acc.push(i); return acc; }, []);
     const drainActive = _drainMode && !_bonusRound;
     const upgradeIndex = prizes.findIndex(p => p.isUpgrade);
-    const canForceSkipReduction = !skipUnlocked && skipCooldown > 0;
+    const canForceSkipReduction = !skipUnlocked && skipCooldown > 0 && !hasTierSkipPrizeBeenWon();
     function randomTicketPrize() { return ticketPrizeIndices[Math.floor(Math.random() * ticketPrizeIndices.length)]; }
 
+    if (mustForceUpgrade && upgradeIndex !== -1) {
+      mustForceUpgrade = false;
+      return upgradeIndex;
+    }
+
+    const cyclePos = winCount % 6;
+
     if (!drainActive) {
+      if (upgradeIndex !== -1 && cyclePos === 5) mustForceUpgrade = true;
       if (tickets <= 1)                          return randomTicketPrize();
       if (tickets === 2 && Math.random() < 0.75) return randomTicketPrize();
       if (tickets === 3 && Math.random() < 0.50) return randomTicketPrize();
@@ -2536,8 +2567,8 @@
     const forcedDiamondJackpot = maybeForceDiamondJackpot(prizes);
     if (forcedDiamondJackpot !== -1) return forcedDiamondJackpot;
 
-    const cyclePos = winCount % 6;
     if (upgradeIndex !== -1 && cyclePos === 5) {
+      mustForceUpgrade = false;
       skipGuaranteeSpin = canForceSkipReduction ? Math.floor(Math.random() * 5) : -1;
       return upgradeIndex;
     }
@@ -2567,7 +2598,7 @@
     spinning = true;
     updateSpinBtn();
     playSpinStart();
-    window.top.postMessage({ type: 'pause' }, '*');
+    postToHost({ type: 'pause' }, '*');
 
     spinCount++;
     const prizeIndex = _pickPrizeSlot();
@@ -2622,7 +2653,7 @@
       } else if (tickets <= 0 && _bonusRound) {
         setTimeout(() => setTickets(3), 350);
       } else {
-        window.top.postMessage({ type: 'play' }, '*');
+        postToHost({ type: 'play' }, '*');
       }
       updateSpinBtn();
     } else {
@@ -2692,10 +2723,18 @@
     const ticketPrizeIndices = prizes.reduce((acc, p, i) => { if (p.ticketBonus > 0) acc.push(i); return acc; }, []);
     const drainActive = _drainMode && !_bonusRound;
     const upgradeIndex = prizes.findIndex(p => p.isUpgrade);
-    const canForceSkipReduction = !skipUnlocked && skipCooldown > 0;
+    const canForceSkipReduction = !skipUnlocked && skipCooldown > 0 && !hasTierSkipPrizeBeenWon();
     function randomTicketPrize() { return ticketPrizeIndices[Math.floor(Math.random() * ticketPrizeIndices.length)]; }
 
+    if (mustForceUpgrade && upgradeIndex !== -1) {
+      mustForceUpgrade = false;
+      return upgradeIndex;
+    }
+
+    const cyclePos = winCount % 6;
+
     if (!drainActive) {
+      if (upgradeIndex !== -1 && cyclePos === 5) mustForceUpgrade = true;
       if (tickets <= 1)                          return randomTicketPrize();
       if (tickets === 2 && Math.random() < 0.75) return randomTicketPrize();
       if (tickets === 3 && Math.random() < 0.50) return randomTicketPrize();
@@ -2704,8 +2743,8 @@
     const forcedDiamondJackpot = maybeForceDiamondJackpot(prizes);
     if (forcedDiamondJackpot !== -1) return forcedDiamondJackpot;
 
-    const cyclePos = winCount % 6;
     if (upgradeIndex !== -1 && cyclePos === 5) {
+      mustForceUpgrade = false;
       skipGuaranteeSpin = canForceSkipReduction ? Math.floor(Math.random() * 5) : -1;
       return upgradeIndex;
     }
@@ -2951,7 +2990,7 @@
       inner.style.opacity = '1'; inner.classList.add('deal-in');
       playDeal();
       setTimeout(() => inner.classList.remove('deal-in'), 500);
-      window.top.postMessage({ type: 'pause' }, '*');
+      postToHost({ type: 'pause' }, '*');
     }, 620);
   }
 
@@ -2986,7 +3025,7 @@
       } else if (tickets <= 0 && _bonusRound) {
         setTimeout(() => setTickets(3), 350);
       } else {
-        window.top.postMessage({ type: 'play' }, '*');
+        postToHost({ type: 'play' }, '*');
       }
     });
   }
@@ -3047,18 +3086,21 @@
     pendingPrize = null;
     // In drain mode (before bonus round), block ticket gains — player must use up existing tickets
     if (prize.ticketBonus > 0 && (!_drainMode || _bonusRound)) setTickets(tickets + prize.ticketBonus);
-    if (prize.skipReduction) adjustSkipCooldown(-prize.skipReduction);
+    if (prize.skipReduction) {
+      adjustSkipCooldown(-prize.skipReduction);
+      markTierSkipPrizeWon();
+    }
     if (prize.skipInstant)   adjustSkipCooldown(-99999);
     if (!prize.isFree && prize.ticketBonus === 0 && !prize.skipReduction && !prize.skipInstant) addToPrizeList(prize);
     if (ACTIVE_GAME !== 'scratch') {
       spinning = false;
-      window.top.postMessage({ type: 'play' }, '*');
+      postToHost({ type: 'play' }, '*');
     }
     if (prize.isFree) {
       if (ACTIVE_GAME === 'scratch') setTimeout(() => dealFreeCard(), 400);
       else setTimeout(() => doSpin(true), 600);
     } else {
-      if (ACTIVE_GAME === 'scratch') { window.top.postMessage({ type: 'play' }, '*'); }
+      if (ACTIVE_GAME === 'scratch') { postToHost({ type: 'play' }, '*'); }
       updateActionBtn();
       // Drain mode: all tickets spent — show exit popup
       if (tickets <= 0 && _drainMode && !_bonusRound) {
@@ -3165,7 +3207,7 @@
       } else if (tickets <= 0 && _bonusRound) {
         setTimeout(() => setTickets(3), 350);
       } else {
-        window.top.postMessage({ type: 'play' }, '*');
+        postToHost({ type: 'play' }, '*');
       }
       updateActionBtn();
     }
@@ -3193,7 +3235,7 @@
     } else if (tickets <= 0 && _bonusRound) {
       setTimeout(() => setTickets(3), 350);
     } else {
-      window.top.postMessage({ type: 'play' }, '*');
+      postToHost({ type: 'play' }, '*');
     }
     updateActionBtn();
   });
@@ -3699,7 +3741,7 @@
     if (nextIdx >= TIERS.length) {
       pendingPrize = null;
       if (ACTIVE_GAME !== 'scratch') spinning = false;
-      window.top.postMessage({ type: 'play' }, '*');
+      postToHost({ type: 'play' }, '*');
       updateActionBtn(); return;
     }
     const cfg = UPGRADE_CONFIGS[nextIdx];
@@ -3732,7 +3774,7 @@
       } else if (tickets <= 0 && _bonusRound) {
         setTimeout(() => setTickets(3), 350);
       } else {
-        window.top.postMessage({ type: 'play' }, '*');
+        postToHost({ type: 'play' }, '*');
         updateActionBtn();
       }
     }, 500);
@@ -3744,7 +3786,7 @@
   function applyTier(index) {
     currentTierIndex = index;
     const tier = TIERS[index];
-    window.top.postMessage({ type: 'tierChange', tier: index }, '*');
+    postToHost({ type: 'tierChange', tier: index }, '*');
 
     document.getElementById('overlay-container').style.background = tier.bg;
 
@@ -3859,13 +3901,19 @@
   // BUILT-IN VIDEO AD (random tab only)
   // ─────────────────────────────────────────
   let _ilcAdDone = false;
-  const _embeddedInHost = (window.top !== window.self);
   let _gameStarted = false;
   let _waitingForHostAd = false;
+  const hostPrerollControlsEl = document.getElementById('host-preroll-controls');
   const hostPrerollSkipBtn = document.getElementById('host-preroll-skip');
   const hostPrerollSkipTimerEl = document.getElementById('host-preroll-skip-timer');
   let _hostPrerollSkipCountdown = null;
   let _hostPrerollSkipRemaining = 0;
+  let _hostPrerollFailsafe = null;
+
+  function postToHost(message) {
+    if (_embeddedInHost && _blockHostPlay && message && message.type === 'play') return;
+    window.top.postMessage(message, '*');
+  }
 
   function clearHostPrerollSkipCountdown() {
     if (_hostPrerollSkipCountdown) {
@@ -3874,10 +3922,17 @@
     }
   }
 
+  function clearHostPrerollFailsafe() {
+    if (_hostPrerollFailsafe) {
+      clearTimeout(_hostPrerollFailsafe);
+      _hostPrerollFailsafe = null;
+    }
+  }
+
   function startHostPrerollSkipCountdown() {
     if (!hostPrerollSkipBtn) return;
     clearHostPrerollSkipCountdown();
-    _hostPrerollSkipRemaining = 10;
+    _hostPrerollSkipRemaining = VIDEO_SKIP_TIMER;
     hostPrerollSkipBtn.disabled = true;
     hostPrerollSkipBtn.classList.remove('ready');
     if (hostPrerollSkipTimerEl) hostPrerollSkipTimerEl.textContent = `Available in ${_hostPrerollSkipRemaining}s`;
@@ -3901,19 +3956,58 @@
     startGame();
   }
 
+  function enterHostPrerollWait() {
+    if (_waitingForHostAd) return;
+    _waitingForHostAd = true;
+    document.documentElement.classList.add('host-preroll-wait');
+    if (VIDEO_SKIP_TIMER > 0 && hostPrerollControlsEl && hostPrerollSkipBtn) {
+      document.documentElement.classList.add('host-preroll-skip-enabled');
+      hostPrerollControlsEl.style.display = 'flex';
+      startHostPrerollSkipCountdown();
+    } else {
+      document.documentElement.classList.remove('host-preroll-skip-enabled');
+      if (hostPrerollControlsEl) hostPrerollControlsEl.style.display = 'none';
+      clearHostPrerollSkipCountdown();
+      if (hostPrerollSkipTimerEl) hostPrerollSkipTimerEl.textContent = '';
+    }
+    skipBtn.style.display = 'none';
+    skipBtn.classList.remove('ready');
+    skipTimerEl.textContent = '';
+    const introPopup = document.getElementById('intro-popup');
+    if (introPopup) introPopup.classList.add('hidden');
+    const gameRoot = document.getElementById('overlay-container');
+    if (gameRoot) gameRoot.style.visibility = 'hidden';
+
+    const adOverlay = document.getElementById('ad-video-overlay');
+    const adVideo = document.getElementById('ad-video');
+    if (adOverlay) adOverlay.style.display = 'none';
+    if (adVideo) {
+      try { adVideo.pause(); } catch (_) {}
+    }
+
+    clearHostPrerollFailsafe();
+    _hostPrerollFailsafe = setTimeout(function () {
+      if (_embeddedInHost && _waitingForHostAd) startAfterHostAd();
+    }, 45000);
+  }
+
   function startAfterHostAd() {
     if (!_waitingForHostAd) return;
     _waitingForHostAd = false;
     _ilcAdDone = true;
+    _blockHostPlay = true;
     clearHostPrerollSkipCountdown();
+    clearHostPrerollFailsafe();
     if (hostPrerollSkipBtn) {
       hostPrerollSkipBtn.disabled = false;
       hostPrerollSkipBtn.classList.remove('ready');
     }
     if (hostPrerollSkipTimerEl) hostPrerollSkipTimerEl.textContent = '';
-      document.documentElement.classList.remove('host-preroll-wait');
+    if (hostPrerollControlsEl) hostPrerollControlsEl.style.display = 'none';
+    document.documentElement.classList.remove('host-preroll-skip-enabled');
+    document.documentElement.classList.remove('host-preroll-wait');
     // Stop host ad playback before transitioning into the game UI.
-    window.top.postMessage({ type: 'pause' }, '*');
+    postToHost({ type: 'pause' }, '*');
     const adVideo = document.getElementById('ad-video');
     if (adVideo) {
       try { adVideo.pause(); } catch (_) {}
@@ -3959,8 +4053,8 @@
         const adUnmuteBtn = document.getElementById('ad-unmute-btn');
 
         // Silence & pause the shell's background video — our ILC-AD is the real ad
-        window.top.postMessage({ type: 'setVolume', value: 0 }, '*');
-        window.top.postMessage({ type: 'pause' }, '*');
+        postToHost({ type: 'setVolume', value: 0 }, '*');
+        postToHost({ type: 'pause' }, '*');
 
         // User just clicked Play — try to unmute and (re)play with sound
         adVideo.muted = false;
@@ -3976,23 +4070,7 @@
 
       // In shell/iframe mode, keep game hidden until host ad fully finishes.
       if (_embeddedInHost) {
-        _waitingForHostAd = true;
-        document.documentElement.classList.add('host-preroll-wait');
-        startHostPrerollSkipCountdown();
-        skipBtn.style.display = 'none';
-        skipBtn.classList.remove('ready');
-        skipTimerEl.textContent = '';
-        const introPopup = document.getElementById('intro-popup');
-        if (introPopup) introPopup.classList.add('hidden');
-        const gameRoot = document.getElementById('overlay-container');
-        if (gameRoot) gameRoot.style.visibility = 'hidden';
-
-        const adOverlay = document.getElementById('ad-video-overlay');
-        const adVideo = document.getElementById('ad-video');
-        if (adOverlay) adOverlay.style.display = 'none';
-        if (adVideo) {
-          try { adVideo.pause(); } catch (_) {}
-        }
+        enterHostPrerollWait();
         return;
       }
 
@@ -4002,9 +4080,15 @@
     }
 
     if (event.data.type === 'adFinished') {
-      if (_embeddedInHost && _waitingForHostAd) startAfterHostAd();
+      if (_embeddedInHost) {
+        if (!_waitingForHostAd) enterHostPrerollWait();
+        startAfterHostAd();
+      }
     }
   });
+
+  // Ensure shell preroll state is active even if adStarted arrives before this listener is attached.
+  if (_embeddedInHost) enterHostPrerollWait();
 
   if (hostPrerollSkipBtn) {
     hostPrerollSkipBtn.addEventListener('click', function () {
@@ -4018,3 +4102,4 @@
 </script>
 </body>
 </html>
+
