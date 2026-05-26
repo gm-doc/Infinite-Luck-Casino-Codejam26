@@ -206,5 +206,5 @@ The submission.html accepts additional arguments that allow you to force the gam
 | `?game=scratch` | Force scratch card game mode |
 | `?game=random` | Pick a random mode (default when omitted) |
 | `?debug` | Show debug buttons (🐕 dog, 🔫 sniper, ₿ maze) and safety-net countdown |
-| `?videoSkipTimer=<seconds>` | Show host preroll Skip Ad button and unlock it after the given number of seconds. Omit or set to `0` to hide the button (default). |
+| `?videoSkipTimer=<seconds>` | Show Video Skip Ad button and unlock it after the given number of seconds. Omit or set to `0` to hide the button (default). |
 
