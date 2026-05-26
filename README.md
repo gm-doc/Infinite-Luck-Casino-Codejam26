@@ -185,9 +185,13 @@ All three game modes (wheel, slots, scratch cards) share the same prize pool div
 
 ## Easter Eggs
 The game has two hidden time control buttons that are in no way indicated by the UI:
-<img width="72" height="17" alt="image" src="https://github.com/user-attachments/assets/db9a6721-b7cc-4d07-9d22-5c0a0d716de8" />
+<div>
+  <img width="72" height="17" alt="image" src="https://github.com/user-attachments/assets/db9a6721-b7cc-4d07-9d22-5c0a0d716de8" />
+</div>
 -clicking green dot next to live chat reduses the skip ad timer by 100s
-<img width="90" height="26" alt="image" src="https://github.com/user-attachments/assets/2f096839-1d9a-4f3f-aeb1-21a53edeac53" />
+<div>
+  <img width="90" height="26" alt="image" src="https://github.com/user-attachments/assets/2f096839-1d9a-4f3f-aeb1-21a53edeac53" />
+</div>
 -clicking the speaker on the volume control adds 100s to your timer
 Both those time adjustments are done with minimal UI (do not display the standard time added/reduce indicators)
 
