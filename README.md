@@ -131,7 +131,7 @@ All three game modes (wheel, slots, scratch cards) share the same prize pool div
 
 | Prize | Icon | Notes |
 |-------|------|-------|
-| Golden Wheel | ⭐ | Tier upgrade to Tier 2 |
+| Golden Tier | ⭐ | Tier upgrade to Tier 2 |
 | CrowPro 1 month | 🎮 | Breake the status crow with one free month |
 | Free Ticket | 🎡 | Next spin is free |
 | $100 Casino Credits | 💵 | |
@@ -149,7 +149,7 @@ All three game modes (wheel, slots, scratch cards) share the same prize pool div
 
 | Prize | Icon | Notes |
 |-------|------|-------|
-| Diamond Wheel | 💎 | Tier upgrade to Tier 3 |
+| Diamond Tier | 💎 | Tier upgrade to Tier 3 |
 | CrowPro 6 months | 🎮 | Six months long pro-crow subscription! |
 | Free Ticket | 🎡 | Next spin is free |
 | **Dog** | 🐕 | Triggers dog minigame |
