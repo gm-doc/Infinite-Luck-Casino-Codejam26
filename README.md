@@ -1,4 +1,4 @@
-# Infinite Luck Casino - Demo Version
+# Infinite Luck Casino - Codejam26 Version
 This is an official Kitboga Codejam26 entry version of the Infinite Luck Casino minigame ads. The github.io page of this version uses the default index.html provided by the KitBoga team in their template (https://github.com/The-Kitboga-Show/codejam26) This is just a preview of how the final submission works within the template. The better preview of the entire project can be found in demo.
 
 git.io entry version: https://gm-doc.github.io/Infinite-Luck-Casino-Codejam26/ <br>
